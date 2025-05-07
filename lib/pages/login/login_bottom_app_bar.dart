@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_flutter_framework/shared/components/message_box.dart';
 
 class LoginBottomAppBar extends StatelessWidget {
   final VoidCallback onLeftAction;
@@ -78,7 +79,15 @@ class LoginBottomAppBar extends StatelessWidget {
             child: MouseRegion(
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
-                onTap: onRightAction,
+                onTap: () {
+                  onRightAction();
+                  showMessageBox(
+                    context: context,
+                    title: 'This is a very long message that should also wrap or truncate properly in the MessageBox widget. The message is intentionally verbose and contains multiple sentences to simulate a real-world scenario where a lot of information needs to be displayed to the user. This test ensures that the widget can handle such cases gracefully without breaking the layout or causing unexpected behavior.',
+                    message: 'This is a very long message that should also wrap or truncate properly in the MessageBox widget. The message is intentionally verbose and contains multiple sentences to simulate a real-world scenario where a lot of information needs to be displayed to the user. This test ensures that the widget can handle such cases gracefully without breaking the layout or causing unexpected behavior.',
+                    onConfirm: () => Navigator.of(context).pop(),
+                  );
+                },
                 child: Container(
                   height: 60,
                   color: Colors.red,
