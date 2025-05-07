@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter_framework/styles/app_color.dart';
+import 'package:my_flutter_framework/shared/utils/print_type.dart';
 
-enum MessageBoxType { primary, success, info, warning, danger }
 
 class MessageBox extends StatelessWidget {
   final String title;
   final String message;
   final VoidCallback? onConfirm;
   final VoidCallback? onCancel;
-  final MessageBoxType type;
+  final PrintType type;
   final bool dismissOnBackgroundTap;
   final String confirmButtonText;
   final String cancelButtonText;
@@ -19,53 +18,23 @@ class MessageBox extends StatelessWidget {
     required this.message,
     this.onConfirm,
     this.onCancel,
-    this.type = MessageBoxType.info,
+    this.type = PrintType.info,
     this.dismissOnBackgroundTap = true,
     this.confirmButtonText = 'Confirm',
     this.cancelButtonText = 'Cancel',
   });
-
-  Icon _getTypeIcon() {
-    switch (type) {
-      case MessageBoxType.primary:
-        return const Icon(Icons.info, color: AppColor.info);
-      case MessageBoxType.success:
-        return const Icon(Icons.check_circle, color: AppColor.success);
-      case MessageBoxType.info:
-        return const Icon(Icons.info_outline, color: AppColor.primary);
-      case MessageBoxType.warning:
-        return const Icon(Icons.warning, color: AppColor.warning);
-      case MessageBoxType.danger:
-        return const Icon(Icons.error, color: AppColor.danger);
-    }
-  }
-
-  Color _getTypeColor() {
-    switch (type) {
-      case MessageBoxType.primary:
-        return AppColor.info;
-      case MessageBoxType.success:
-        return AppColor.success;
-      case MessageBoxType.info:
-        return AppColor.primary;
-      case MessageBoxType.warning:
-        return AppColor.warning;
-      case MessageBoxType.danger:
-        return AppColor.danger;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Row(
         children: [
-          _getTypeIcon(),
+          PrintTypeUtil.getTypeIcon(type),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               title,
-              style: TextStyle(color: _getTypeColor()),
+              style: TextStyle(color: PrintTypeUtil.getTypeColor(type)),
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
             ),
@@ -98,7 +67,7 @@ void showMessageBox({
   required BuildContext context,
   required String title,
   required String message,
-  MessageBoxType type = MessageBoxType.info,
+  PrintType type = PrintType.info,
   VoidCallback? onConfirm,
   VoidCallback? onCancel,
   bool dismissOnBackgroundTap = true,

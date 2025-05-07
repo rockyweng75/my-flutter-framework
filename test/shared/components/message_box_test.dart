@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_flutter_framework/shared/components/message_box.dart';
+import 'package:my_flutter_framework/shared/utils/print_type.dart';
 
 void main() {
   group('MessageBox Widget Tests', () {
@@ -24,7 +25,7 @@ void main() {
           home: MessageBox(
             title: 'Info',
             message: 'This is an info message.',
-            type: MessageBoxType.info,
+            type: PrintType.info,
           ),
         ),
       );
