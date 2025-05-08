@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_flutter_framework/shared/components/full_loading.dart';
 import 'package:my_flutter_framework/shared/components/message_box.dart';
 import 'package:my_flutter_framework/shared/components/reusable_notification.dart';
 import 'package:my_flutter_framework/shared/utils/print_type.dart';
@@ -83,11 +84,12 @@ class LoginBottomAppBar extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   onRightAction();
-                  ReusableNotification(context).show(
-                    'Right action clicked!',
-                    type: PrintType.info,
-                    duration: const Duration(seconds: 2),
-                  );
+                  FullLoading.show(context);
+
+                  // 1秒後關閉 loading
+                  Future.delayed(const Duration(seconds: 1), () {
+                    FullLoading.hide(); // 關閉 loading
+                  });
                 },
                 child: Container(
                   height: 60,

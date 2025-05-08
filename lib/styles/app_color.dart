@@ -37,4 +37,5 @@ class AppColor {
   static const Color btnEdit = Colors.orange; // 編輯按鈕顏色
   static const Color btnCreate = Colors.green; // 新增按鈕顏色
   static const Color btnDelete = Colors.red; // 刪除按鈕顏色
+  static const Color blockBackground = Color.fromARGB(122, 0, 0, 0); // Block 背景色 (黑色)
 }
