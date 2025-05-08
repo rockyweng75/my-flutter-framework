@@ -35,6 +35,9 @@ class MockTodoService implements ITodoService {
       );
     }
 
+    // 模擬網絡延遲
+    await Future.delayed(const Duration(seconds: 1));
+
     final data = _mockDatabase.sublist(
       startIndex,
       endIndex > _mockDatabase.length ? _mockDatabase.length : endIndex,

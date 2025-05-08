@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:my_flutter_framework/api/http_client.dart';
+import 'package:my_flutter_framework/api/paginated_response.dart';
 import 'package:my_flutter_framework/pages/layout/main_layout_page.dart';
 import 'package:my_flutter_framework/api/todos/itodo_service.dart';
-import 'package:my_flutter_framework/mock/mock_todo_service.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:my_flutter_framework/shared/utils/transaction_manager.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -15,20 +15,33 @@ class DashboardPage extends ConsumerStatefulWidget {
 }
 
 class _DashboardPageState extends MainLayoutPage<DashboardPage> {
-  final ITodoService _todoService = MockTodoService(
-    HttpClient('https://example.com'),
-  );
+  late final ITodoService _todoService;
   int _completedTodos = 0;
   int _incompleteTodos = 0;
 
   @override
   void initState() {
     super.initState();
-    _fetchTodoCounts();
+    _todoService = ref.read(todoServiceProvider);
+    
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _fetchTodoCounts();
+    });
   }
 
   Future<void> _fetchTodoCounts() async {
-    final todos = await _todoService.getTodos(page: 1, pageSize: 100);
+    TransactionManager transactionManager = TransactionManager(context);
+    final todos = await transactionManager.execute<PaginatedResponse<Map<String, dynamic>>>(() async {
+      return await _todoService.getTodos(page: 1, pageSize: 100);
+    });
+    if (!mounted) return; // 確保 widget 仍在 widget tree 中
+    if (todos == null) return; // 確保 todos 不為 null
+    // final todos = await _todoService.getTodos(page: 1, pageSize: 100);
     setState(() {
       _completedTodos =
           todos.data.where((todo) => todo['completed'] == true).length;

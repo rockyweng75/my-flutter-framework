@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_flutter_framework/api/login/i_login_service.dart';
 import 'package:my_flutter_framework/pages/home/dashboard_page.dart';
 import 'package:my_flutter_framework/pages/login/login_bottom_app_bar.dart';
 import 'package:my_flutter_framework/pages/register/register_page.dart';
 import 'package:my_flutter_framework/shared/biometric_auth.dart';
+import 'package:my_flutter_framework/shared/components/reusable_notification.dart';
+import 'package:my_flutter_framework/shared/utils/print_type.dart';
+import 'package:my_flutter_framework/shared/utils/transaction_manager.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
+  late final ILoginService _loginService;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordObscured = true;
@@ -19,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    _loginService = ref.read(loginServiceProvider);
     _initializeDefaultCredentials();
   }
 
@@ -30,6 +37,13 @@ class _LoginPageState extends State<LoginPage> {
   void _handleLogin() async {
     try {
       if (!mounted) return; // Ensure the widget is still in the widget tree
+      TransactionManager transactionManager = TransactionManager(context);
+      await transactionManager.execute(() async {
+        await _loginService.login(
+          _usernameController.text,
+          _passwordController.text,
+        );
+      });
       _navigateToDashboard();
     } catch (e) {
       if (!mounted) return; // Ensure the widget is still in the widget tree
@@ -45,9 +59,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _showLoginError(Object e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Login failed: $e')),
+    ReusableNotification(context).show(
+      e.toString(),
+      type: PrintType.danger,
     );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(content: Text('Login failed: $e')),
+    // );
   }
 
   void _handleBiometricLogin() async {
@@ -181,14 +199,6 @@ class _LoginPageState extends State<LoginPage> {
     return ElevatedButton(
       onPressed: _handleLogin,
       child: const Text('Login'),
-    );
-  }
-
-  Widget _buildBiometricLoginButton() {
-    return TextButton.icon(
-      onPressed: _handleBiometricLogin,
-      icon: const Icon(Icons.fingerprint),
-      label: const Text('Login with Biometrics'),
     );
   }
 

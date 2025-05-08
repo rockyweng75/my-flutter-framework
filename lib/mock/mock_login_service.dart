@@ -7,8 +7,19 @@ import 'mock_http_client.dart';
 class MockLoginService implements ILoginService {
   final MockHttpClient _mockHttpClient = MockHttpClient();
 
+  final Map<String, String> _successUser = {
+    'test': '1qaz@WSX',
+    'admin': '1qaz@WSX',
+  };
+
   @override
   Future<LoginModel> login(String username, String password) async {
+
+    // 檢查使用者名稱和密碼是否正確
+    if (!_successUser.containsKey(username) || _successUser[username] != password) {
+      throw Exception('使用者名稱或密碼錯誤');
+    }
+
     // 模擬 HTTP 請求
     final request = http.Request('POST', Uri.parse('/login'))
       ..body = jsonEncode({'username': username, 'password': password});
