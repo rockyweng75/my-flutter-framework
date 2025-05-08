@@ -41,6 +41,10 @@ class MessageBox extends StatelessWidget {
               maxLines: 2,
             ),
           ),
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ],
       ),
       content: SingleChildScrollView(

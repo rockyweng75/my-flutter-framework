@@ -133,5 +133,25 @@ void main() {
       expect(find.textContaining('This is a very long title'), findsOneWidget);
       expect(find.textContaining('This is a very long message'), findsOneWidget);
     });
+
+    testWidgets('displays close button in title and works correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MessageBox(
+            title: 'Close Button Test',
+            message: 'Test the close button functionality.',
+          ),
+        ),
+      );
+
+      // Verify the close button is present
+      expect(find.byIcon(Icons.close), findsOneWidget);
+
+      // Tap the close button and verify the dialog is dismissed
+      await tester.tap(find.byIcon(Icons.close));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MessageBox), findsNothing);
+    });
   });
 }
