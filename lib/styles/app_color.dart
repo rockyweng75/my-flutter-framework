@@ -23,11 +23,13 @@ class AppColor {
   static const Color dangerDark = Color(0xFFD32F2F); // 危險 - 加深
   static const Color primaryDark = Color(0xFF1565C0); // 主要 - 加深
   static const Color secondaryDark = Color(0xFF616161); // 一般 - 加深
+  static const Color infoDark = Color(0xFF424242); // 一般 - 加深
   static const Color successLight = Color(0xFFC8E6C9); // 成功 - 變淺
   static const Color warningLight = Color(0xFFFFF9C4); // 警告 - 變淺
   static const Color dangerLight = Color(0xFFFFCDD2); // 危險 - 變淺
   static const Color primaryLight = Color(0xFFBBDEFB); // 主要 - 變淺
   static const Color secondaryLight = Color(0xFFF5F5F5); // 一般 - 變淺
+  static const Color infoLight = Color(0xFFE0E0E0); // 一般 - 變淺
   static const Color menuBackground = Color(0xFFF5F5F5); // Menu 背景色 (灰階)
   static const Color menuText = Color(0xFF000000); // Menu 文字色 (對比色)
   static const Color menuHover = info; // Menu 高亮色 (灰階)

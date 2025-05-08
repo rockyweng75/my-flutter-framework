@@ -5,6 +5,7 @@ import 'package:my_flutter_framework/shared/field_config.dart';
 import 'package:my_flutter_framework/shared/order_config.dart';
 import 'package:my_flutter_framework/shared/pages/simple_list_page.dart';
 import 'package:my_flutter_framework/shared/pages/simple_query_form_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TestSimpleListPage extends SimpleListPage {
   TestSimpleListPage({
@@ -62,8 +63,13 @@ class _TestSimpleQueryFormPageState extends SimpleQueryFormPageState<TestSimpleQ
   }
 
 }
-void main() {
+void main() async {
+  TestWidgetsFlutterBinding.ensureInitialized(); // 初始化環境
+
+  await dotenv.load(fileName: ".env"); // 加載環境變數
+
   group('SimpleListPage', () {
+
     testWidgets('should display loading indicator when isLoading is true', (WidgetTester tester) async {
       // Arrange
       final scrollController = ScrollController();

@@ -18,19 +18,37 @@ class PrintTypeUtil {
         return 'Danger';
     }
   }
-  
-  static Icon getTypeIcon(PrintType type) {
+
+  static Icon getTypeIcon({
+    PrintType type = PrintType.primary,
+    bool isLight = false,
+  }) {
     switch (type) {
       case PrintType.primary:
-        return const Icon(Icons.info, color: AppColor.info);
+        return Icon(
+          Icons.info,
+          color: isLight ? AppColor.infoLight : AppColor.info,
+        );
       case PrintType.success:
-        return const Icon(Icons.check_circle, color: AppColor.success);
+        return Icon(
+          Icons.check_circle,
+          color: isLight ? AppColor.successLight : AppColor.success,
+        );
       case PrintType.info:
-        return const Icon(Icons.info_outline, color: AppColor.primary);
+        return Icon(
+          Icons.info_outline,
+          color: isLight ? AppColor.primaryLight : AppColor.primary,
+        );
       case PrintType.warning:
-        return const Icon(Icons.warning, color: AppColor.warning);
+        return Icon(
+          Icons.warning,
+          color: isLight ? AppColor.warningLight : AppColor.warning,
+        );
       case PrintType.danger:
-        return const Icon(Icons.error, color: AppColor.danger);
+        return Icon(
+          Icons.error,
+          color: isLight ? AppColor.dangerLight : AppColor.danger,
+        );
     }
   }
 

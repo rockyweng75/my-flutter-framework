@@ -29,7 +29,9 @@ class MessageBox extends StatelessWidget {
     return AlertDialog(
       title: Row(
         children: [
-          PrintTypeUtil.getTypeIcon(type),
+          PrintTypeUtil.getTypeIcon(
+            type: type,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
