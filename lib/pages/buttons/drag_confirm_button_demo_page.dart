@@ -15,6 +15,8 @@ class DragConfirmButtonDemoPage extends ConsumerStatefulWidget {
 
 class _DragConfirmButtonDemoPageState
     extends MainLayoutPage<DragConfirmButtonDemoPage> {
+    
+
   @override
   Widget buildContent(BuildContext context) {
     return Center(
@@ -92,9 +94,7 @@ class _DragConfirmButtonDemoPageState
         ).show('Confirmed by Sliding Left!', type: PrintType.success);
       },
       onCancel: () {
-        ReusableNotification(
-          context,
-        ).show('Cancelled', type: PrintType.danger);
+        ReusableNotification(context).show('Cancelled', type: PrintType.danger);
       },
       confirmOnLeft: true,
     );
@@ -108,21 +108,13 @@ class _DragConfirmButtonDemoPageState
           context,
         ).show('Confirmed with Custom Icon!', type: PrintType.success);
       },
-      confirmIcon: const Icon(
-        Icons.thumb_up,
-        color: Colors.blue,
-        size: 40,
-      ),
+      confirmIcon: const Icon(Icons.thumb_up, color: Colors.blue, size: 40),
       onCancel: () {
         ReusableNotification(
           context,
         ).show('Cancelled with Custom Icon!', type: PrintType.danger);
       },
-      cancelIcon: const Icon(
-        Icons.thumb_down,
-        color: Colors.red,
-        size: 40,
-      ),
+      cancelIcon: const Icon(Icons.thumb_down, color: Colors.red, size: 40),
     );
   }
 }

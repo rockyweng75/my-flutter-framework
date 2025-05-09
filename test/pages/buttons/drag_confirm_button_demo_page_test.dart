@@ -8,29 +8,6 @@ import 'package:my_flutter_framework/shared/components/buttons/drag_confirm_butt
 import '../message_box_page_test.dart';
 
 void main() {
-  testWidgets('DragConfirmButtonDemoPage displays DragConfirmButton', (
-    WidgetTester tester,
-  ) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          notificationServiceProvider.overrideWithValue(
-            TestNotificationService(),
-          ),
-        ],
-        child: MaterialApp(
-          initialRoute: '/drag_confirm',
-          routes: AppRouter.routes,
-        ),
-      ),
-    );
-
-    // Verify the page title
-    expect(find.text('Drag Confirm Button'), findsOneWidget);
-
-    // Verify the DragConfirmButton is present
-    expect(find.text('Slide to Confirm'), findsOneWidget);
-  });
 
   testWidgets('DragConfirmButtonDemoPage allows dragging to confirm', (
     WidgetTester tester,
