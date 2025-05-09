@@ -42,6 +42,13 @@ class _DragConfirmButtonDemoPageState
           ),
           const SizedBox(height: 20),
           _buildDragConfirmLeftAndCacelButton(context),
+          const SizedBox(height: 20),
+          const Text(
+            'Drag Button with Custom Confirm Icon',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 20),
+          _buildDragConfirmWithCustomIconButton(context),
         ],
       ),
     );
@@ -90,6 +97,32 @@ class _DragConfirmButtonDemoPageState
         ).show('Cancelled', type: PrintType.danger);
       },
       confirmOnLeft: true,
+    );
+  }
+
+  Widget _buildDragConfirmWithCustomIconButton(BuildContext context) {
+    return DragConfirmButton(
+      label: 'Slide to Confirm',
+      onConfirm: () {
+        ReusableNotification(
+          context,
+        ).show('Confirmed with Custom Icon!', type: PrintType.success);
+      },
+      confirmIcon: const Icon(
+        Icons.thumb_up,
+        color: Colors.blue,
+        size: 40,
+      ),
+      onCancel: () {
+        ReusableNotification(
+          context,
+        ).show('Cancelled with Custom Icon!', type: PrintType.danger);
+      },
+      cancelIcon: const Icon(
+        Icons.thumb_down,
+        color: Colors.red,
+        size: 40,
+      ),
     );
   }
 }

@@ -5,6 +5,8 @@ class DragConfirmButton extends StatefulWidget {
   final VoidCallback onConfirm;
   final VoidCallback? onCancel;
   final bool confirmOnLeft;
+  final Icon? confirmIcon;
+  final Icon? cancelIcon;
 
   const DragConfirmButton({
     Key? key,
@@ -12,6 +14,8 @@ class DragConfirmButton extends StatefulWidget {
     required this.onConfirm,
     this.onCancel, 
     this.confirmOnLeft = false,
+    this.confirmIcon,
+    this.cancelIcon,
   }) : super(key: key);
 
   @override
@@ -53,6 +57,23 @@ class _DragConfirmButtonState extends State<DragConfirmButton> {
     }
   }
 
+  Widget _buildConfirmIcon() {
+    return widget.confirmIcon ?? Icon(
+      Icons.check_circle,
+      color: Colors.green,
+      size: 40, // Match the height of the row
+    );
+  }
+
+  Widget _buildCancelIcon() {
+    return widget.cancelIcon ?? Icon(
+      Icons.cancel,
+      color: Colors.red,
+      size: 40, // Match the height of the row
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -74,29 +95,28 @@ class _DragConfirmButtonState extends State<DragConfirmButton> {
               borderRadius: BorderRadius.circular(25),
             ),
             alignment: Alignment.center,
-            child: _isConfirmed()
-                ? Icon(
-                    Icons.check_circle,
-                    color: Colors.green,
-                    size: 40, // Match the height of the row
-                  )
-                : _isCancelled()
-                    ? Icon(
-                        Icons.cancel,
-                        color: Colors.red,
-                        size: 40, // Match the height of the row
-                      )
-                    : null,
+            child: (() {
+              if (_isConfirmed() || (!_isCancelled() && widget.onCancel == null)) {
+                return _buildConfirmIcon();
+              } else if (_isCancelled() && widget.onCancel != null) {
+                return _buildCancelIcon();
+              } else {
+                return null;
+              }
+            })(),
           ),
           GestureDetector(
             onHorizontalDragUpdate: (details) {
               setState(() {
                 _dragPosition += details.delta.dx;
-                if (_dragPosition >= screenWidth - buttonWidth - buffer) {
+                final isDraggingRight = _dragPosition >= screenWidth - buttonWidth - buffer;
+                final isDraggingLeft = _dragPosition <= buffer;
+
+                if (isDraggingRight) {
                   _isRight = true;
                   _isLeft = false;
                   _dragPosition = screenWidth - buttonWidth;
-                } else if (_dragPosition <= buffer) {
+                } else if (isDraggingLeft) {
                   _isLeft = true;
                   _isRight = false;
                   _dragPosition = 0;
@@ -124,6 +144,7 @@ class _DragConfirmButtonState extends State<DragConfirmButton> {
                 Positioned(
                   left: _dragPosition,
                   child: Container(
+                    key: Key('drag_button_${widget.key}'),
                     height: 50,
                     width: buttonWidth,
                     decoration: BoxDecoration(

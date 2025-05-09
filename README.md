@@ -37,6 +37,13 @@
 - 使用 `TransctionManger` 進行非同步資料交易的管理。
 - 支援執行開啟Loading控制
 
+
+### 6. 拖曳確認按鈕
+- 使用 `DragConfirmButton` 提供拖曳確認功能。
+- 可自訂往左確認還是往右確認。
+
+![拖曳確認按鈕](docs/drag_confirm_button.gif)
+
 ---
 
 ## 安裝與使用
