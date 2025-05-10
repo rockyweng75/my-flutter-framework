@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_flutter_framework/api/http_client.dart';
@@ -14,9 +16,13 @@ class CustomScrollBehavior extends ScrollBehavior {
   ScrollPhysics getScrollPhysics(BuildContext context) {
     return const BouncingScrollPhysics(); // 啟用 iOS 式彈性滾動
   }
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse, // 支持滑鼠拖動
+      };
 }
-
-
 
 void main() async {
   await dotenv.load(fileName: ".env");
