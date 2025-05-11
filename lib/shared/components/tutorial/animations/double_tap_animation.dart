@@ -29,8 +29,6 @@ class _DoubleTapAnimationState extends State<DoubleTapAnimation> with SingleTick
           opacity: _opacityAnim,
           child: Icon(widget.icon, size: 32, color: Colors.amberAccent.withOpacity(0.5)),
         ),
-        const SizedBox(width: 8),
-        Icon(widget.icon, size: 36, color: Colors.amberAccent),
       ],
     );
   }

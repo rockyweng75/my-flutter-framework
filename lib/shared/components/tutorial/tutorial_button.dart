@@ -88,11 +88,11 @@ class _TutorialScreenState extends State<_TutorialScreen> {
   }
 
   void _goTo(int index) {
-    _controller.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.ease,
-    );
+    setState(() {
+      _current = index;
+    });
+    // 若要動畫可保留 animateToPage，但 UI 切換要靠 setState
+    _controller.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.ease);
   }
 
   @override
@@ -143,7 +143,6 @@ class _TutorialScreenState extends State<_TutorialScreen> {
             child: SafeArea(
               child: Column(
                 children: [
-                  // 將說明內容移到畫面上方
                   Padding(
                     padding: const EdgeInsets.only(
                       top: 32.0,
@@ -267,7 +266,6 @@ class _TutorialScreenState extends State<_TutorialScreen> {
               textAlign: TextAlign.center,
             ),
           ),
-        // 手勢動作區塊已移至下方
       ],
     );
   }
@@ -352,6 +350,3 @@ class _SpotlightPainter extends CustomPainter {
     return oldDelegate.targetRect != targetRect;
   }
 }
-
-// --- 以下為動畫元件範例 ---
-// 已抽取為獨立檔案，這裡可刪除

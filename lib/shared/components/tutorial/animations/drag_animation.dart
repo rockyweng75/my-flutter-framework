@@ -17,26 +17,47 @@ class _DragAnimationState extends State<DragAnimation> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 800))..repeat(reverse: true);
-    Offset begin = Offset.zero;
-    Offset end;
-    switch (widget.type) {
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _setAnimByType(widget.type);
+    _controller.repeat(reverse: true);
+  }
+
+  void _setAnimByType(GestureType type) {
+    Offset begin, end;
+    switch (type) {
       case GestureType.dragLeft:
+        begin = Offset.zero;
         end = const Offset(-0.5, 0);
         break;
       case GestureType.dragRight:
+        begin = Offset.zero;
         end = const Offset(0.5, 0);
         break;
       case GestureType.dragUp:
+        begin = Offset.zero;
         end = const Offset(0, -0.5);
         break;
       case GestureType.dragDown:
+        begin = Offset.zero;
         end = const Offset(0, 0.5);
         break;
       default:
+        begin = Offset.zero;
         end = Offset.zero;
     }
     _offsetAnim = Tween<Offset>(begin: begin, end: end).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void didUpdateWidget(covariant DragAnimation oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.type != widget.type) {
+      _setAnimByType(widget.type);
+      _controller.reset();
+      _controller.repeat(reverse: true);
+    } else if (!_controller.isAnimating) {
+      _controller.repeat(reverse: true);
+    }
   }
 
   @override

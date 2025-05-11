@@ -9,8 +9,6 @@ class RotateAnimation extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 32, color: Colors.amberAccent),
-        const SizedBox(width: 8),
-        Icon(Icons.rotate_right, size: 28, color: Colors.amberAccent),
       ],
     );
   }
