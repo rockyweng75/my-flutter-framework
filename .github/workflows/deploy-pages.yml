@@ -21,9 +21,11 @@ jobs:
       - name: Build web
         run: flutter build web
 
-      - name: Fix base href for GitHub Pages
+      - name: Fix asset paths for GitHub Pages
         run: |
-          sed -i 's|<base href="/">|<base href="/my_flutter_framework/">|' build/web/index.html
+          sed -i 's|src="flutter.js"|src="/my_flutter_framework/flutter.js"|g' build/web/index.html
+          sed -i 's|src="main.dart.js"|src="/my_flutter_framework/main.dart.js"|g' build/web/index.html
+          sed -i 's|src="flutter_bootstrap.js"|src="/my_flutter_framework/flutter_bootstrap.js"|g' build/web/index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
