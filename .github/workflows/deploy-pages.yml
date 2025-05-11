@@ -21,8 +21,12 @@ jobs:
       - name: Build web
         run: flutter build web
 
+      - name: Fix base href for GitHub Pages
+        run: |
+          sed -i 's|<base href="/">|<base href="/my_flutter_framework/">|' build/web/index.html
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           publish_dir: ./build/web
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # ✅ 正確參數名
+          github_token: ${{ secrets.GITHUB_TOKEN }}
