@@ -21,6 +21,7 @@ class TutorialButton extends StatelessWidget {
   final String prevLabel;
   final String nextLabel;
   final String doneLabel;
+  final String? tooltipMessage;
 
   const TutorialButton({
     super.key,
@@ -29,13 +30,17 @@ class TutorialButton extends StatelessWidget {
     this.prevLabel = '上一步',
     this.nextLabel = '下一步',
     this.doneLabel = '完成',
+    this.tooltipMessage = '教學',
   });
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(icon),
-      onPressed: () => _showTutorial(context),
+    return Tooltip(
+      message: tooltipMessage,
+      child: IconButton(
+        icon: Icon(icon),
+        onPressed: () => _showTutorial(context),
+      ),
     );
   }
 
