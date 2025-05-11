@@ -1,0 +1,16 @@
+enum GestureType {
+  tap,
+  longPress,
+  doubleTap,
+  dragLeft,
+  dragRight,
+  dragUp,
+  dragDown,
+  swipe,
+  swipeLeft,
+  swipeRight,
+  swipeUp,
+  swipeDown,
+  zoom,
+  rotate,
+}

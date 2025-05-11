@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_flutter_framework/pages/layout/main_layout_page.dart';
 import 'package:my_flutter_framework/shared/components/message_box.dart';
+import 'package:my_flutter_framework/shared/components/tutorial/tutorial_button.dart';
+import 'package:my_flutter_framework/shared/components/tutorial/tutorial_step.dart';
 import 'package:my_flutter_framework/shared/utils/print_type.dart';
 import 'package:my_flutter_framework/styles/app_color.dart';
 
+// 引入 ValueKey 以便於 id 註冊
 class MessageBoxPage extends ConsumerStatefulWidget {
   const MessageBoxPage({super.key});
 
@@ -15,10 +18,42 @@ class MessageBoxPage extends ConsumerStatefulWidget {
 }
 
 class _MessageBoxPageState extends MainLayoutPage<MessageBoxPage> {
+  // 註冊 GlobalKey
+  final GlobalKey _listKey = GlobalKey();
+  late final Map<String, GlobalKey> _buttonKeys;
+  late final Map<String, GlobalKey> _cardKeys;
+
   @override
   void initState() {
     super.initState();
+    _registerKeys();
   }
+
+  void _registerKeys() {
+    _buttonKeys = {
+      for (var type in PrintType.values) _buttonKeyId(type): GlobalKey(),
+    };
+    _cardKeys = {
+      for (var type in PrintType.values) _cardKeyId(type): GlobalKey(),
+    };
+    globalWidgetRegistry['messageBoxTypeList'] = _listKey;
+    _buttonKeys.forEach((id, key) {
+      globalWidgetRegistry[id] = key;
+    });
+    _cardKeys.forEach((id, key) {
+      globalWidgetRegistry[id] = key;
+    });
+  }
+
+  String _buttonKeyId(PrintType type) =>
+      type == PrintType.danger
+          ? 'showMessageBoxButtonDanger'
+          : 'showMessageBoxButton_${type.toString().split('.').last}';
+
+  String _cardKeyId(PrintType type) =>
+      type == PrintType.danger
+          ? 'dangerMessageBox'
+          : 'messageBox_${type.toString().split('.').last}';
 
   @override
   Widget buildContent(BuildContext context) {
@@ -43,6 +78,7 @@ class _MessageBoxPageState extends MainLayoutPage<MessageBoxPage> {
         SingleChildScrollView(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 400),
+            // 用 key 包住 ListView
             child: _buildCardListTile(context),
           ),
         ),
@@ -53,6 +89,7 @@ class _MessageBoxPageState extends MainLayoutPage<MessageBoxPage> {
   Widget _buildCardListTile(context) {
     List<PrintType> types = PrintType.values;
     return ListView.builder(
+      key: _listKey, // 用 GlobalKey
       itemCount: types.length,
       itemBuilder: (context, index) {
         return _buildCardByPrintType(context, types[index]);
@@ -61,14 +98,15 @@ class _MessageBoxPageState extends MainLayoutPage<MessageBoxPage> {
   }
 
   Widget _buildCardByPrintType(context, PrintType type) {
+    final String cardId = _cardKeyId(type);
+    final String btnId = _buttonKeyId(type);
     return Card(
       color: AppColor.cardOddBackground,
+      key: _cardKeys[cardId], // 用 GlobalKey
       child: ListTile(
         title: Row(
           children: [
-            PrintTypeUtil.getTypeIcon(
-              type: type,
-            ),
+            PrintTypeUtil.getTypeIcon(type: type),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -89,6 +127,7 @@ class _MessageBoxPageState extends MainLayoutPage<MessageBoxPage> {
               : 'This is a ${type.toString().split('.').last.toLowerCase()} message box.',
         ),
         trailing: ElevatedButton(
+          key: _buttonKeys[btnId], // 用 GlobalKey
           onPressed: () {
             showMessageBox(
               context: context,
@@ -101,7 +140,6 @@ class _MessageBoxPageState extends MainLayoutPage<MessageBoxPage> {
               onConfirm:
                   type == PrintType.danger
                       ? () {
-                        // 確認按鈕邏輯
                         Navigator.of(context).pop();
                         print('Danger confirmed');
                       }
@@ -109,7 +147,6 @@ class _MessageBoxPageState extends MainLayoutPage<MessageBoxPage> {
               onCancel:
                   type == PrintType.danger
                       ? () {
-                        // 取消按鈕邏輯
                         Navigator.of(context).pop();
                         print('Danger cancelled');
                       }
@@ -121,4 +158,32 @@ class _MessageBoxPageState extends MainLayoutPage<MessageBoxPage> {
       ),
     );
   }
+
+  @override
+  List<TutorialStep>? getTutorialSteps(BuildContext context) {
+    return messageBoxTutorialSteps;
+  }
+
+  final List<TutorialStep> messageBoxTutorialSteps = [
+    TutorialStep(
+      title: '訊息盒教學',
+      description: '本頁展示各種訊息盒(Message Box)的用法，點擊右上角問號可隨時查看教學。',
+      // imageAssetPath: 'assets/tutorial/message_box_intro.png', // 可用頁面截圖或移除
+    ),
+    TutorialStep(
+      title: '訊息盒類型列表',
+      description: '這裡列出所有支援的訊息盒類型（info、success、warning、danger）。',
+      targetWidgetId: 'messageBoxTypeList', // 請在對應 ListView 註冊 id
+    ),
+    TutorialStep(
+      title: '顯示訊息盒',
+      description: '點擊 Show 按鈕會跳出對應類型的訊息盒。',
+      targetWidgetId: 'showMessageBoxButton', // 請在對應 ElevatedButton 註冊 id
+    ),
+    TutorialStep(
+      title: '危險訊息盒',
+      description: 'danger 類型訊息盒會有確認與取消按鈕，適合用於重要操作。',
+      targetWidgetId: 'dangerMessageBox', // 請在 danger 類型訊息盒註冊 id
+    ),
+  ];
 }

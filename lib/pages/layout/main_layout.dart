@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:my_flutter_framework/api/logout/logout_service.dart';
 import 'package:my_flutter_framework/pages/layout/notification/notification_button.dart';
 import 'package:my_flutter_framework/router/app_router.dart';
+import 'package:my_flutter_framework/shared/components/tutorial/tutorial_button.dart';
+import 'package:my_flutter_framework/shared/components/tutorial/tutorial_step.dart';
 import 'package:my_flutter_framework/styles/app_color.dart';
-
 class MainLayout extends StatelessWidget {
   final Widget child;
   final Widget? floatingActionButton;
+  final List<TutorialStep>? tutorialSteps;
 
-  const MainLayout({required this.child, this.floatingActionButton, super.key});
+  const MainLayout({
+    required this.child, 
+    this.floatingActionButton, 
+    this.tutorialSteps,
+    super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +22,11 @@ class MainLayout extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppRouter.menuNames[ModalRoute.of(context)?.settings.name] ?? 'Main Layout'),
         actions: [
-          NotificationButton(),
+          if (tutorialSteps != null && (tutorialSteps?.isNotEmpty ?? false))
+            TutorialButton(
+              steps: tutorialSteps!,
+            ), // 教學按鈕
+          NotificationButton()
         ],
       ),
       drawer: Drawer(
