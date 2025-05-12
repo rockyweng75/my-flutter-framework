@@ -1,6 +1,8 @@
+import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:my_flutter_framework/api/login/login_model.dart';
 import 'package:my_flutter_framework/mock/mock_login_service.dart';
+import 'package:my_flutter_framework/models/user.dart';
+import 'package:my_flutter_framework/shared/utils/jwt_utils.dart';
 
 void main() {
   group('MockLoginService', () {
@@ -10,15 +12,18 @@ void main() {
       mockLoginService = MockLoginService();
     });
 
-    test('login should return a valid LoginModel', () async {
+    test('login should return a valid User', () async {
       final username = 'test';
       final password = '1qaz@WSX';
 
       final result = await mockLoginService.login(username, password);
 
-      expect(result, isA<LoginModel>());
-      expect(result.username, 'test');
-      expect(result.token, 'mock_token_12345');
+      expect(result, isA<User>());
+      expect(result.account, 'test');
+      final map = JwtUtils.parseJwtPayload(result.token);
+      expect(map, isNotNull);
+      expect(map!['username'], 'test');
+      expect(map['exp'], isNotNull);
     });
 
     test('login should throw an exception for incorrect password', () async {

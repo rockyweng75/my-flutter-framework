@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:my_flutter_framework/api/logout/logout_service.dart';
+import 'package:my_flutter_framework/database/user_repository.dart';
+import 'package:my_flutter_framework/models/user.dart';
 import 'package:my_flutter_framework/pages/layout/notification/notification_button.dart';
 import 'package:my_flutter_framework/router/app_router.dart';
 import 'package:my_flutter_framework/shared/components/tutorial/tutorial_button.dart';
@@ -44,7 +47,9 @@ class MainLayout extends StatelessWidget {
                 .map((entry) => ListTile(
                       title: Text(entry.value), // 使用 menuNames 的值作為菜單名稱
                       onTap: () {
-                        Navigator.pushReplacementNamed(context, entry.key);
+                        // Navigator.pushReplacementNamed(context, entry.key);
+                        // 使用 GoRouter 進行導航
+                        context.go(entry.key);
                       },
                     )),
             ListTile(
@@ -52,7 +57,10 @@ class MainLayout extends StatelessWidget {
               onTap: () async {
                 final logoutService = LogoutService();
                 await logoutService.logout();
-                Navigator.pushReplacementNamed(context, '/login');
+                await UserRepository.clearUser();
+                // Navigator.pushReplacementNamed(context, '/login');
+                // 使用 GoRouter 進行導航
+                context.go('/login');
               },
             ),
           ],

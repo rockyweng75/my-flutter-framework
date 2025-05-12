@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:my_flutter_framework/api/http_client.dart';
 import 'package:my_flutter_framework/router/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,7 +26,11 @@ class CustomScrollBehavior extends ScrollBehavior {
 }
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   await dotenv.load(fileName: ".env");
+  await Hive.initFlutter();
+
   runApp(
     ProviderScope( // 全局註冊 Riverpod
       overrides: [
@@ -33,16 +38,7 @@ void main() async {
           HttpClient(dotenv.env['API_BASE_URL'] ?? 'http://localhost:3000'),
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false, // 移除右上角 debug 圖示
-        scrollBehavior: CustomScrollBehavior(), // 全局應用自定義滾動行為
-        title: 'My Flutter Framework',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        initialRoute: AppRouter.initialRoute,
-        routes: AppRouter.routes,
-      ),
+      child: MyApp(), // 這裡用 MyApp
     ),
   );
 }
@@ -52,13 +48,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      scrollBehavior: CustomScrollBehavior(),
       title: 'My Flutter Framework',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: AppRouter.initialRoute,
-      routes: AppRouter.routes,
+      routerConfig: AppRouter.appRouter,
     );
+
+
+    // return MaterialApp(
+    //   title: 'My Flutter Framework',
+    //   theme: ThemeData(
+    //     primarySwatch: Colors.blue,
+    //   ),
+    //   initialRoute: AppRouter.initialRoute,
+    //   routes: AppRouter.routes,
+    // );
   }
 }

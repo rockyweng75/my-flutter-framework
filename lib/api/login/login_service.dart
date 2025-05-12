@@ -1,17 +1,9 @@
 import 'dart:async';
-
+import 'package:my_flutter_framework/models/user.dart';
 import 'i_login_service.dart';
-import 'login_model.dart';
-
-
-
 class LoginService implements ILoginService {
   @override
-  Future<LoginModel> login(String username, String password) async {
-    // 真實的 API 請求邏輯可以在這裡實現
-    await Future.delayed(const Duration(seconds: 2));
-
-    // 假設成功返回一個 LoginModel
-    return LoginModel(username: username, token: 'real_token_12345');
+  Future<User> login(String username, String password) async {
+    throw UnimplementedError('LoginService.login() has not been implemented.');
   }
 }

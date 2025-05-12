@@ -58,4 +58,8 @@
 flutter pub get
 ```
 
+### 3. json_serializable Model 腳本
+```bash
+dart run build_runner build
+```
 

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:my_flutter_framework/api/login/i_login_service.dart';
+import 'package:my_flutter_framework/database/user_repository.dart';
+import 'package:my_flutter_framework/models/user.dart';
 import 'package:my_flutter_framework/pages/home/dashboard_page.dart';
 import 'package:my_flutter_framework/pages/login/login_bottom_app_bar.dart';
 import 'package:my_flutter_framework/pages/register/register_page.dart';
@@ -39,10 +42,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (!mounted) return; // Ensure the widget is still in the widget tree
       TransactionManager transactionManager = TransactionManager(context);
       await transactionManager.execute(() async {
-        await _loginService.login(
+        User user = await _loginService.login(
           _usernameController.text,
           _passwordController.text,
         );
+        await UserRepository.saveUser(user);
       });
       _navigateToDashboard();
     } catch (e) {
@@ -52,17 +56,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   void _navigateToDashboard() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const DashboardPage()),
-    );
+    context.go('/dashboard');
+
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => const DashboardPage()),
+    // );
   }
 
   void _showLoginError(Object e) {
-    ReusableNotification(context).show(
-      e.toString(),
-      type: PrintType.danger,
-    );
+    ReusableNotification(context).show(e.toString(), type: PrintType.danger);
     // ScaffoldMessenger.of(context).showSnackBar(
     //   SnackBar(content: Text('Login failed: $e')),
     // );
@@ -88,9 +91,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
+      appBar: AppBar(title: const Text('Login')),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return _buildLoginBody(constraints);
@@ -109,17 +110,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       color: Colors.blueGrey[50], // Set background color
       height: constraints.maxHeight,
       width: constraints.maxWidth,
-      constraints: const BoxConstraints(
-        minWidth: 320,
-        minHeight: 480,
-      ),
+      constraints: const BoxConstraints(minWidth: 320, minHeight: 480),
       padding: const EdgeInsets.all(16.0),
       child: Center(
         child: SingleChildScrollView(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 300,
-            ),
+            constraints: const BoxConstraints(maxWidth: 300),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -140,7 +136,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         // 設定最大、最小寬高
         double maxWidth = constraints.maxWidth;
         double maxHeight = constraints.maxHeight;
-        double logoHeight = (maxHeight * 0.18).clamp(48.0, 120.0); // 最小48, 最大120
+        double logoHeight = (maxHeight * 0.18).clamp(
+          48.0,
+          120.0,
+        ); // 最小48, 最大120
         double logoWidth = (logoHeight * 1.5).clamp(72.0, 180.0); // 最小72, 最大180
         // 若寬度超過父層最大寬度，則等比例縮小
         if (logoWidth > maxWidth) {
@@ -153,10 +152,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             child: SizedBox(
               width: logoWidth,
               height: logoHeight,
-              child: Image.asset(
-                'assets/logo.png',
-                fit: BoxFit.contain,
-              ),
+              child: Image.asset('assets/logo.png', fit: BoxFit.contain),
             ),
           ),
         );
@@ -207,7 +203,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       decoration: InputDecoration(
         labelText: 'Password',
         border: const OutlineInputBorder(),
-        contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 12.0,
+          horizontal: 16.0,
+        ),
         suffixIcon: IconButton(
           icon: Icon(
             _isPasswordObscured ? Icons.visibility : Icons.visibility_off,
@@ -225,10 +224,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Widget _buildLoginButton() {
-    return ElevatedButton(
-      onPressed: _handleLogin,
-      child: const Text('Login'),
-    );
+    return ElevatedButton(onPressed: _handleLogin, child: const Text('Login'));
   }
 
   Widget _buildRegisterButton() {
@@ -241,9 +237,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void _navigateToRegisterPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const RegisterPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const RegisterPage()),
     );
   }
 }

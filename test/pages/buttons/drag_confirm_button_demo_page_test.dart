@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_flutter_framework/api/notification/i_notification_service.dart';
+import 'package:my_flutter_framework/pages/buttons/drag_confirm_button_demo_page.dart';
 import 'package:my_flutter_framework/router/app_router.dart';
 import 'package:my_flutter_framework/shared/components/buttons/drag_confirm_button.dart';
 
@@ -20,8 +21,10 @@ void main() {
           ),
         ],
         child: MaterialApp(
-          initialRoute: '/drag_confirm',
-          routes: AppRouter.routes,
+          home: DragConfirmButtonDemoPage(), // 直接指定要測的頁面
+
+          // initialRoute: '/drag_confirm',
+          // routes: AppRouter.routes,
         ),
       ),
     );
