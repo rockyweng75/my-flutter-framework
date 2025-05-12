@@ -107,20 +107,27 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget _buildLoginBody(BoxConstraints constraints) {
     return Container(
       color: Colors.blueGrey[50], // Set background color
-      height: constraints.maxHeight, // 讓容器高度等於可用高度
+      height: constraints.maxHeight,
+      width: constraints.maxWidth,
+      constraints: const BoxConstraints(
+        minWidth: 320,
+        minHeight: 480,
+      ),
       padding: const EdgeInsets.all(16.0),
       child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: 300,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildLogo(),
-              const SizedBox(height: 16),
-              _buildLoginForm(),
-            ],
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 300,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildLogo(),
+                const SizedBox(height: 16),
+                _buildLoginForm(),
+              ],
+            ),
           ),
         ),
       ),
@@ -128,9 +135,32 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Widget _buildLogo() {
-    return Image.asset(
-      'assets/logo.jpeg',
-      height: 100,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // 設定最大、最小寬高
+        double maxWidth = constraints.maxWidth;
+        double maxHeight = constraints.maxHeight;
+        double logoHeight = (maxHeight * 0.18).clamp(48.0, 120.0); // 最小48, 最大120
+        double logoWidth = (logoHeight * 1.5).clamp(72.0, 180.0); // 最小72, 最大180
+        // 若寬度超過父層最大寬度，則等比例縮小
+        if (logoWidth > maxWidth) {
+          logoWidth = maxWidth;
+          logoHeight = logoWidth / 1.5;
+        }
+        return Center(
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: SizedBox(
+              width: logoWidth,
+              height: logoHeight,
+              child: Image.asset(
+                'assets/logo.png',
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
