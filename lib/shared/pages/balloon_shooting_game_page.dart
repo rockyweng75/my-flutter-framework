@@ -24,6 +24,9 @@ class _BalloonShootingGamePageState extends State<BalloonShootingGamePage> with 
   Timer? _gameTimer;
   Timer? _arrowTimer;
 
+  // 新增狀態：tiny 視窗下控制區收合
+  bool _showButtons = false;
+
   @override
   void initState() {
     super.initState();
@@ -116,6 +119,16 @@ class _BalloonShootingGamePageState extends State<BalloonShootingGamePage> with 
         builder: (context, constraints) {
           final width = constraints.maxWidth;
           final height = constraints.maxHeight;
+          // 動態調整弓箭與按鈕區位置與大小
+          final isSmall = height < 400;
+          final isTiny = height < 320;
+          final arrowAreaTop = isSmall ? height * 0.78 : height * 0.85;
+          final btnVerticalPad = isSmall ? 8.0 : 24.0;
+          final btnFontSize = isSmall ? 16.0 : 24.0;
+          final btnIconSize = isSmall ? 28.0 : 36.0;
+          final btnHeight = isSmall ? 38.0 : 54.0;
+          final btnBgOpacity = isSmall ? 0.55 : 0.85;
+          bool showButtons = !isTiny || _showButtons;
           return Stack(
             children: [
               // 氣球
@@ -128,7 +141,7 @@ class _BalloonShootingGamePageState extends State<BalloonShootingGamePage> with 
               if (!_isArrowFlying)
                 Positioned(
                   left: _arrowX * (width - _arrowWidth),
-                  top: height * 0.85,
+                  top: arrowAreaTop,
                   child: _ArrowWidget(width: _arrowWidth, height: _arrowHeight),
                 ),
               // 飛行中的箭
@@ -139,73 +152,90 @@ class _BalloonShootingGamePageState extends State<BalloonShootingGamePage> with 
                   child: _ArrowWidget(width: _arrowWidth, height: _arrowHeight),
                 ),
               // 控制區
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final btnWidth = (constraints.maxWidth - 64) / 3;
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          SizedBox(
-                            width: btnWidth,
-                            child: ElevatedButton(
-                              onPressed: () => _moveArrow(-0.05),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueGrey,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 18),
-                                elevation: 4,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+              if (!isTiny || _showButtons)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: btnVerticalPad, horizontal: 16),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final btnWidth = (constraints.maxWidth - 64) / 3;
+                        return AnimatedOpacity(
+                          opacity: btnBgOpacity,
+                          duration: const Duration(milliseconds: 200),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              SizedBox(
+                                width: btnWidth,
+                                child: ElevatedButton(
+                                  onPressed: () => _moveArrow(-0.05),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blueGrey,
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(vertical: btnHeight / 2),
+                                    elevation: 4,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: Icon(Icons.arrow_left, size: btnIconSize),
                                 ),
                               ),
-                              child: const Icon(Icons.arrow_left, size: 36),
-                            ),
-                          ),
-                          SizedBox(
-                            width: btnWidth,
-                            child: ElevatedButton(
-                              onPressed: _shootArrow,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 20),
-                                textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                                elevation: 6,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                              SizedBox(
+                                width: btnWidth,
+                                child: ElevatedButton(
+                                  onPressed: _shootArrow,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.orange,
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(vertical: btnHeight / 2 + 2),
+                                    textStyle: TextStyle(fontSize: btnFontSize, fontWeight: FontWeight.bold),
+                                    elevation: 6,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  child: const Text('射擊'),
                                 ),
                               ),
-                              child: const Text('射擊'),
-                            ),
-                          ),
-                          SizedBox(
-                            width: btnWidth,
-                            child: ElevatedButton(
-                              onPressed: () => _moveArrow(0.05),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueGrey,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 18),
-                                elevation: 4,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                              SizedBox(
+                                width: btnWidth,
+                                child: ElevatedButton(
+                                  onPressed: () => _moveArrow(0.05),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blueGrey,
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(vertical: btnHeight / 2),
+                                    elevation: 4,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: Icon(Icons.arrow_right, size: btnIconSize),
                                 ),
                               ),
-                              child: const Icon(Icons.arrow_right, size: 36),
-                            ),
+                            ],
                           ),
-                        ],
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
+              // Tiny 視窗下可收合按鈕浮動開關
+              if (isTiny)
+                Positioned(
+                  right: 12,
+                  bottom: 12 + (showButtons ? btnHeight * 2 : 0),
+                  child: FloatingActionButton.small(
+                    backgroundColor: Colors.blueGrey.withOpacity(0.7),
+                    onPressed: () => setState(() => _showButtons = !_showButtons),
+                    child: Icon(showButtons ? Icons.close : Icons.gamepad, size: 22),
+                    tooltip: showButtons ? '收合控制區' : '展開控制區',
+                  ),
+                ),
               // 分數
               Positioned(
                 top: 24,
