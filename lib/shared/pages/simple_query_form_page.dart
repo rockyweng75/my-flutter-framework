@@ -31,12 +31,11 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
   // 用於存儲查詢和排序表單的資料
   Map<String, dynamic> formDataStorage = {
     'search': {}, // 存儲查詢表單的資料
-    'sort': {},   // 存儲排序表單的資料
+    'sort': {}, // 存儲排序表單的資料
   };
 
   List<FieldConfig> getFields();
   List<OrderConfig> getOrderFields();
-
 
   Widget getFormBuilderField(GlobalKey<FormBuilderState> formKey) {
     return DevFormBuilder(
@@ -252,15 +251,19 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
     formKey = GlobalKey<FormBuilderState>(); // 定義表單的 key
     var testMode = dotenv.env['DEBUG_MODE'] == 'true'; // 獲取測試模式的環境變數
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Scrollbar(
+          thumbVisibility: false,
+          notificationPredicate: (notification) => notification.depth == 0,
+          controller: _actionBarScrollController,
+          child: SingleChildScrollView(
+            controller: _actionBarScrollController,
+            scrollDirection: Axis.horizontal,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                if (testMode)
-                  _buildDebugInfo(formKey), // 顯示表單資料的按鈕
+                if (testMode) _buildDebugInfo(formKey), // 顯示表單資料的按鈕
                 _buildActionButtonWithBadge(
                   '查詢',
                   const Icon(Icons.search),
@@ -292,7 +295,7 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -301,7 +304,7 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
     Map<String, dynamic> fields = formDataStorage; // 獲取當前表單的所有字段
 
     return Container(
-      alignment: Alignment.topRight,
+      alignment: Alignment.center,
       padding: const EdgeInsets.all(8.0),
       child: IconButton(
         icon: const Icon(Icons.info_outline),
@@ -313,9 +316,7 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
                 title: const Text('Form Data'),
                 content: SingleChildScrollView(
                   child: Text(
-                    JsonHelper.mapToJson(
-                      fields
-                    ),
+                    JsonHelper.mapToJson(fields),
                     style: const TextStyle(fontFamily: 'monospace'),
                   ),
                 ),
@@ -332,4 +333,7 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
       ),
     );
   }
+
+  // 新增一個 ScrollController 供 action bar 使用
+  final ScrollController _actionBarScrollController = ScrollController();
 }

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter_framework/shared/components/full_loading.dart';
+
 class LoginBottomAppBar extends StatelessWidget {
   final VoidCallback onLeftAction;
   final VoidCallback onBiometricLogin;
   final VoidCallback onRightAction;
 
   const LoginBottomAppBar({
-    Key? key,
+    super.key,
     required this.onLeftAction,
     required this.onBiometricLogin,
     required this.onRightAction,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -80,12 +80,8 @@ class LoginBottomAppBar extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   onRightAction();
-                  FullLoading.show(context);
-
-                  // 1秒後關閉 loading
-                  Future.delayed(const Duration(seconds: 1), () {
-                    FullLoading.hide(); // 關閉 loading
-                  });
+                  // 觸發一個未捕捉的錯誤，讓 FlutterError.onError 處理（導向 500 頁）
+                  throw Exception('Test Exception: 這是 500 錯誤測試');
                 },
                 child: Container(
                   height: 60,

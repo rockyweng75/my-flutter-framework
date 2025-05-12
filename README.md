@@ -44,6 +44,14 @@
 
 ![拖曳確認按鈕](docs/drag_confirm_button.gif)
 
+### 7. 404頁面 與 500頁面
+- 提供預設的404與500錯誤頁面。
+- 使用go_router進行路由管理。
+- `ErrorHandle` 提供錯誤處理與頁面跳轉功能。
+
+![404頁面](docs/404.png)
+![500頁面](docs/500.png)
+
 ---
 
 ## 安裝與使用
@@ -63,3 +71,5 @@ flutter pub get
 dart run build_runner build
 ```
 
+#### 圖片來源：
+AI生成
