@@ -105,23 +105,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Widget _buildLoginBody(BoxConstraints constraints) {
-    return SingleChildScrollView( // Wrap the body in a scrollable view to prevent overflow
-      child: Container(
-        color: Colors.blueGrey[50], // Set background color
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 300,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildLogo(),
-                const SizedBox(height: 16),
-                _buildLoginForm(),
-              ],
-            ),
+    return Container(
+      color: Colors.blueGrey[50], // Set background color
+      height: constraints.maxHeight, // 讓容器高度等於可用高度
+      padding: const EdgeInsets.all(16.0),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 300,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildLogo(),
+              const SizedBox(height: 16),
+              _buildLoginForm(),
+            ],
           ),
         ),
       ),
