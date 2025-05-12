@@ -274,6 +274,8 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
                 _buildActionButtonWithBadge('清除', const Icon(Icons.clear), () {
                   if (mounted) {
                     setState(() {
+                      formDataStorage['search'] = {}; // 清除查詢條件
+                      formDataStorage['sort'] = {}; // 清除排序條件
                       buttonQueryConditions['查詢'] = false;
                       buttonQueryConditions['排序'] = false;
                     });
