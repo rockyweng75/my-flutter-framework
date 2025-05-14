@@ -15,7 +15,7 @@ abstract class SimpleListPage extends StatelessWidget {
   final Widget Function(BuildContext, Map<String, dynamic>) rowBuilder;
 
   const SimpleListPage({
-    Key? key,
+    super.key,
     required this.items,
     required this.scrollController,
     required this.isLoading,
@@ -23,7 +23,7 @@ abstract class SimpleListPage extends StatelessWidget {
     required this.onLoadMore,
     required this.onItemTap,
     required this.rowBuilder,
-  }) : super(key: key);
+  });
 
   T buildQueryForm<T extends SimpleQueryFormPage>(BuildContext context);
   

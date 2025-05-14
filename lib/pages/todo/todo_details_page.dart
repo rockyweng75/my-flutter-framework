@@ -6,19 +6,22 @@ import 'package:my_flutter_framework/models/assignee.dart';
 import 'package:my_flutter_framework/shared/field_config.dart';
 import 'package:my_flutter_framework/shared/pages/simple_form_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:io';
 
 class TodoDetailsPage extends SimpleFormPage {
   final Map<String, dynamic> todo;
 
-  TodoDetailsPage({required this.todo, super.viewMode = ViewMode.view, super.key})
-    : super(title: 'Todo Details');
+  TodoDetailsPage({
+    required this.todo,
+    super.viewMode = ViewMode.view,
+    super.key,
+  }) : super(title: 'Todo Details');
 
   @override
   ConsumerState<SimpleFormPage> createState() => _TodoDetailsPageState();
 }
 
 class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
-
   late final IAssigneeService _assigneeService;
   late final ITodoService _todoService;
 
@@ -104,6 +107,35 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
         validator: FormBuilderValidators.required(),
         enabled: !isViewMode,
       ),
+      FieldConfig(
+        name: 'image',
+        label: '圖片',
+        type: FieldType.imageUpload,
+        validator: (value) {
+          if (value == null || value.isEmpty) return '請選擇圖片';
+          final file = File(value);
+          if (!file.existsSync()) return '圖片不存在';
+          final size = file.lengthSync();
+          if (size > 5 * 1024 * 1024) return '圖片需小於 5MB';
+          return null;
+        },
+        enabled: !isViewMode,
+      ),
+
+      FieldConfig(
+        name: 'file',
+        label: '檔案',
+        type: FieldType.fileUpload,
+        validator: (value) {
+          if (value == null || value.isEmpty) return '請選擇檔案';
+          final file = File(value);
+          if (!file.existsSync()) return '檔案不存在';
+          final size = file.lengthSync();
+          if (size > 5 * 1024 * 1024) return '檔案需小於 5MB';
+          return null;
+        },
+        enabled: !isViewMode,
+      ),
     ];
   }
 
@@ -111,7 +143,7 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
   Future<void> onSave(Map<String, dynamic> formData) async {
     if (isViewMode) return;
 
-    if(isEditMode) {
+    if (isEditMode) {
       // 編輯模式下，更新 Todo
       final updatedTodo = {...widget.todo, ...formData};
       await _todoService.updateTodo(widget.todo['id'], updatedTodo);

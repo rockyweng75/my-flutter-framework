@@ -88,12 +88,6 @@ class AppRouter {
   /// 白名單
   static final List<String> whiteList = [
     '/login',
-    '/dashboard',
-    '/todo',
-    '/message_box',
-    '/drag_confirm',
-    '/swipe_page_demo',
-    '/balloon_game',
     '/500',
   ];
 }

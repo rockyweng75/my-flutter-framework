@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginBottomAppBar extends StatelessWidget {
   final VoidCallback onLeftAction;
@@ -80,8 +81,8 @@ class LoginBottomAppBar extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   onRightAction();
-                  // 觸發一個未捕捉的錯誤，讓 FlutterError.onError 處理（導向 500 頁）
-                  throw Exception('Test Exception: 這是 500 錯誤測試');
+                  // 這裡可以添加右側按鈕的行為
+                  context.go('/404');
                 },
                 child: Container(
                   height: 60,

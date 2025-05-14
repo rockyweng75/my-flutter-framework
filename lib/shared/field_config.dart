@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:my_flutter_framework/shared/components/form_builder/searchable_dropdown_field.dart';
+import 'package:my_flutter_framework/shared/components/file_upload.dart';
+import 'package:my_flutter_framework/shared/components/image_upload.dart';
 
 class FieldConfig {
   final String name;
@@ -8,8 +10,13 @@ class FieldConfig {
   final String? value;
   final String? Function(dynamic)? validator;
   final FieldType type;
-  final Future<Map<String, String>> Function(String? keyword, int? page, int? perPage)? optionsProvider; 
-  bool enabled; 
+  final Future<Map<String, String>> Function(
+    String? keyword,
+    int? page,
+    int? perPage,
+  )?
+  optionsProvider;
+  bool enabled;
 
   FieldConfig({
     required this.name,
@@ -18,7 +25,7 @@ class FieldConfig {
     this.validator,
     this.type = FieldType.text,
     this.optionsProvider,
-    this.enabled = true, 
+    this.enabled = true,
   }) : assert(
          type != FieldType.dropdown || optionsProvider != null,
          'optionsProvider must be provided for dropdown type',
@@ -78,14 +85,15 @@ class FieldConfig {
               name: name,
               decoration: InputDecoration(labelText: label),
               initialValue: value,
-              options: optionsData.entries
-                  .map(
-                    (entry) => FormBuilderFieldOption(
-                      value: entry.key,
-                      child: Text(entry.value),
-                    ),
-                  )
-                  .toList(),
+              options:
+                  optionsData.entries
+                      .map(
+                        (entry) => FormBuilderFieldOption(
+                          value: entry.key,
+                          child: Text(entry.value),
+                        ),
+                      )
+                      .toList(),
               validator: validator,
               enabled: enabled, // 使用 enabled 控制唯讀
             );
@@ -108,14 +116,15 @@ class FieldConfig {
               decoration: InputDecoration(labelText: label),
               initialValue: value,
               dropdownColor: Colors.grey[200],
-              items: optionsData.entries
-                  .map(
-                    (entry) => DropdownMenuItem(
-                      value: entry.key,
-                      child: Text(entry.value),
-                    ),
-                  )
-                  .toList(),
+              items:
+                  optionsData.entries
+                      .map(
+                        (entry) => DropdownMenuItem(
+                          value: entry.key,
+                          child: Text(entry.value),
+                        ),
+                      )
+                      .toList(),
               validator: validator,
               enabled: enabled, // 使用 enabled 控制唯讀
             );
@@ -137,14 +146,15 @@ class FieldConfig {
               name: name,
               decoration: InputDecoration(labelText: label),
               initialValue: value,
-              options: optionsData.entries
-                  .map(
-                    (entry) => FormBuilderChipOption(
-                      value: entry.key,
-                      child: Text(entry.value),
-                    ),
-                  )
-                  .toList(),
+              options:
+                  optionsData.entries
+                      .map(
+                        (entry) => FormBuilderChipOption(
+                          value: entry.key,
+                          child: Text(entry.value),
+                        ),
+                      )
+                      .toList(),
               validator: validator,
               enabled: enabled, // 使用 enabled 控制唯讀
             );
@@ -177,6 +187,62 @@ class FieldConfig {
           validator: validator as String? Function(String?)?,
           enabled: enabled, // 使用 enabled 控制唯讀
         );
+      case FieldType.fileUpload:
+        // 讓 fileUpload 也能被 FormBuilder 驗證與管理
+        return FormBuilderField<String>(
+          name: name,
+          validator: validator as String? Function(String?)?,
+          enabled: enabled,
+          initialValue: value,
+          builder:
+              (field) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FileUpload(
+                    label: label,
+                    onFileSelected: (file) {
+                      // 將檔案路徑存入表單欄位
+                      field.didChange(file.path);
+                    },
+                  ),
+                  if (field.hasError)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Text(
+                        field.errorText ?? '',
+                        style: TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    ),
+                ],
+              ),
+        );
+      case FieldType.imageUpload:
+        // 整合 image_upload 元件
+        return FormBuilderField<String>(
+          name: name,
+          validator: validator as String? Function(String?)?,
+          enabled: enabled,
+          initialValue: value,
+          builder: (field) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ImageUpload(
+                label: label,
+                onImageSelected: (file) {
+                  field.didChange(file.path);
+                },
+              ),
+              if (field.hasError)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Text(
+                    field.errorText ?? '',
+                    style: TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ),
+            ],
+          ),
+        );
       default:
         throw UnimplementedError('FieldType not supported: $type');
     }
@@ -194,4 +260,6 @@ enum FieldType {
   textArea,
   choiceChips,
   searchableDropdown,
+  fileUpload,
+  imageUpload,
 }
