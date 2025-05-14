@@ -92,7 +92,9 @@ class SearchableDropdownFieldState extends State<SearchableDropdownField> {
             child: Text(
               _displayedLabel ?? '',
               style: TextStyle(
-                color: _displayedLabel == null ? Colors.grey : Colors.black,
+                color: _displayedLabel == null
+                    ? Theme.of(context).hintColor
+                    : Theme.of(context).textTheme.bodyLarge?.color,
               ),
             ),
           ),

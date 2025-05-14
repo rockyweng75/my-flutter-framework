@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_flutter_framework/shared/components/tutorial/gesture_type.dart';
 import 'package:my_flutter_framework/shared/components/tutorial/tutorial_step.dart';
+import 'package:my_flutter_framework/styles/theme_data.dart';
 
 class SwipeAnimation extends StatefulWidget {
   final GestureType type;
@@ -10,14 +11,18 @@ class SwipeAnimation extends StatefulWidget {
   State<SwipeAnimation> createState() => _SwipeAnimationState();
 }
 
-class _SwipeAnimationState extends State<SwipeAnimation> with SingleTickerProviderStateMixin {
+class _SwipeAnimationState extends State<SwipeAnimation>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnim;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
     _setAnimByType(widget.type);
     _controller.repeat(reverse: true);
   }
@@ -45,7 +50,10 @@ class _SwipeAnimationState extends State<SwipeAnimation> with SingleTickerProvid
         begin = Offset.zero;
         end = Offset.zero;
     }
-    _offsetAnim = Tween<Offset>(begin: begin, end: end).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _offsetAnim = Tween<Offset>(
+      begin: begin,
+      end: end,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -77,13 +85,17 @@ class _SwipeAnimationState extends State<SwipeAnimation> with SingleTickerProvid
             () {
               switch (widget.type) {
                 case GestureType.swipeLeft:
-                  return TutorialStep.gestureIconMap[GestureType.swipeLeft] ?? Icons.arrow_back;
+                  return TutorialStep.gestureIconMap[GestureType.swipeLeft] ??
+                      Icons.arrow_back;
                 case GestureType.swipeRight:
-                  return TutorialStep.gestureIconMap[GestureType.swipeRight] ?? Icons.arrow_forward;
+                  return TutorialStep.gestureIconMap[GestureType.swipeRight] ??
+                      Icons.arrow_forward;
                 case GestureType.swipeUp:
-                  return TutorialStep.gestureIconMap[GestureType.swipeUp] ?? Icons.arrow_upward;
+                  return TutorialStep.gestureIconMap[GestureType.swipeUp] ??
+                      Icons.arrow_upward;
                 case GestureType.swipeDown:
-                  return TutorialStep.gestureIconMap[GestureType.swipeDown] ?? Icons.arrow_downward;
+                  return TutorialStep.gestureIconMap[GestureType.swipeDown] ??
+                      Icons.arrow_downward;
                 default:
                   return Icons.open_with;
               }

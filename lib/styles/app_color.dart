@@ -7,6 +7,8 @@ class AppColor {
   static const Color textBlue_0xFF4470B1 = Color(0xFF4470B1);
   static const Color textBlue_0xFF2196F3 = Color(0xFF2196F3);
   static const Color white_0xFFFFFFFF = Color(0xFFFFFFFF);
+  static const Color background = Color(0xFFFFFFFF); // 背景色 (灰階)
+  static const Color backgroundDark = Color(0xFF303030); // 背景色 (黑色)
   /// 偶數卡片背景色
   static const Color cardEvenBackground = white_0xFFFFFFFF;
   /// 奇數卡片背景色
@@ -18,6 +20,8 @@ class AppColor {
   static const Color danger = Color(0xFFF44336); // 危險
   static const Color primary = Color(0xFF1976D2); // 主要
   static const Color info = Color(0xFF9E9E9E); // 一般
+  static const Color secondary = Color(0xFF757575); // 一般
+  static const Color text = Color(0xFF212121); // 文字色
   static const Color successDark = Color(0xFF388E3C); // 成功 - 加深
   static const Color warningDark = Color(0xFFFFA000); // 警告 - 加深
   static const Color dangerDark = Color(0xFFD32F2F); // 危險 - 加深

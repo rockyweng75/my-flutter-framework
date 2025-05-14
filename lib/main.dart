@@ -2,13 +2,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:my_flutter_framework/api/http_client.dart';
 import 'package:my_flutter_framework/handlers/error_handler.dart';
 import 'package:my_flutter_framework/router/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_flutter_framework/styles/theme_data.dart';
 
 class CustomScrollBehavior extends ScrollBehavior {
   @override
@@ -63,7 +63,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       scrollBehavior: CustomScrollBehavior(),
       title: 'My Flutter Framework',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: appTheme,
+      darkTheme: appDarkTheme,
       routerConfig: AppRouter.appRouter,
       // 不要再用 builder 包 Navigator，讓 GoRouter 處理所有路由
     );

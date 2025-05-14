@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_flutter_framework/shared/components/tutorial/gesture_type.dart';
 import 'package:my_flutter_framework/shared/components/tutorial/tutorial_step.dart';
+import 'package:my_flutter_framework/styles/theme_data.dart';
 
 class DragAnimation extends StatefulWidget {
   final GestureType type;
@@ -10,14 +11,18 @@ class DragAnimation extends StatefulWidget {
   State<DragAnimation> createState() => _DragAnimationState();
 }
 
-class _DragAnimationState extends State<DragAnimation> with SingleTickerProviderStateMixin {
+class _DragAnimationState extends State<DragAnimation>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnim;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
     _setAnimByType(widget.type);
     _controller.repeat(reverse: true);
   }
@@ -45,7 +50,10 @@ class _DragAnimationState extends State<DragAnimation> with SingleTickerProvider
         begin = Offset.zero;
         end = Offset.zero;
     }
-    _offsetAnim = Tween<Offset>(begin: begin, end: end).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _offsetAnim = Tween<Offset>(
+      begin: begin,
+      end: end,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -77,13 +85,17 @@ class _DragAnimationState extends State<DragAnimation> with SingleTickerProvider
             () {
               switch (widget.type) {
                 case GestureType.dragLeft:
-                  return TutorialStep.gestureIconMap[GestureType.dragLeft] ?? Icons.arrow_back;
+                  return TutorialStep.gestureIconMap[GestureType.dragLeft] ??
+                      Icons.arrow_back;
                 case GestureType.dragRight:
-                  return TutorialStep.gestureIconMap[GestureType.dragRight] ?? Icons.arrow_forward;
+                  return TutorialStep.gestureIconMap[GestureType.dragRight] ??
+                      Icons.arrow_forward;
                 case GestureType.dragUp:
-                  return TutorialStep.gestureIconMap[GestureType.dragUp] ?? Icons.arrow_upward;
+                  return TutorialStep.gestureIconMap[GestureType.dragUp] ??
+                      Icons.arrow_upward;
                 case GestureType.dragDown:
-                  return TutorialStep.gestureIconMap[GestureType.dragDown] ?? Icons.arrow_downward;
+                  return TutorialStep.gestureIconMap[GestureType.dragDown] ??
+                      Icons.arrow_downward;
                 default:
                   return Icons.open_with;
               }

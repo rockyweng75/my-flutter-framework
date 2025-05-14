@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_flutter_framework/styles/theme_data.dart';
 
 class DragConfirmButton extends StatefulWidget {
   final String label;
@@ -9,20 +10,20 @@ class DragConfirmButton extends StatefulWidget {
   final Icon? cancelIcon;
 
   const DragConfirmButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onConfirm,
     this.onCancel, 
     this.confirmOnLeft = false,
     this.confirmIcon,
     this.cancelIcon,
-  }) : super(key: key);
+  });
 
   @override
-  _DragConfirmButtonState createState() => _DragConfirmButtonState();
+  DragConfirmButtonState createState() => DragConfirmButtonState();
 }
 
-class _DragConfirmButtonState extends State<DragConfirmButton> {
+class DragConfirmButtonState extends State<DragConfirmButton> {
   double _dragPosition = 0.0;
   bool _isRight = false;
   bool _isLeft = false;
@@ -60,7 +61,7 @@ class _DragConfirmButtonState extends State<DragConfirmButton> {
   Widget _buildConfirmIcon() {
     return widget.confirmIcon ?? Icon(
       Icons.check_circle,
-      color: Colors.green,
+      color: Theme.of(context).colorScheme.success,
       size: 40, // Match the height of the row
     );
   }
@@ -68,7 +69,7 @@ class _DragConfirmButtonState extends State<DragConfirmButton> {
   Widget _buildCancelIcon() {
     return widget.cancelIcon ?? Icon(
       Icons.cancel,
-      color: Colors.red,
+      color: Theme.of(context).colorScheme.error,
       size: 40, // Match the height of the row
     );
   }
@@ -91,7 +92,7 @@ class _DragConfirmButtonState extends State<DragConfirmButton> {
           Container(
             height: 50,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(25),
             ),
             alignment: Alignment.center,
@@ -148,13 +149,13 @@ class _DragConfirmButtonState extends State<DragConfirmButton> {
                     height: 50,
                     width: buttonWidth,
                     decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: Theme.of(context).colorScheme.primary,
                       borderRadius: BorderRadius.circular(25),
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       widget.label,
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                     ),
                   ),
                 ),

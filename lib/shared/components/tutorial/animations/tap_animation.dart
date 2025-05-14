@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_flutter_framework/styles/theme_data.dart';
 
 class TapAnimation extends StatefulWidget {
   final IconData icon;
@@ -6,25 +7,39 @@ class TapAnimation extends StatefulWidget {
   @override
   State<TapAnimation> createState() => _TapAnimationState();
 }
-class _TapAnimationState extends State<TapAnimation> with SingleTickerProviderStateMixin {
+
+class _TapAnimationState extends State<TapAnimation>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnim;
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 400))..repeat(reverse: true);
-    _scaleAnim = Tween<double>(begin: 1.0, end: 1.3).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    )..repeat(reverse: true);
+    _scaleAnim = Tween<double>(
+      begin: 1.0,
+      end: 1.3,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return ScaleTransition(
       scale: _scaleAnim,
-      child: Icon(widget.icon, size: 36, color: Colors.amberAccent),
+      child: Icon(
+        widget.icon,
+        size: 36,
+        color: Colors.amberAccent,
+      ),
     );
   }
 }

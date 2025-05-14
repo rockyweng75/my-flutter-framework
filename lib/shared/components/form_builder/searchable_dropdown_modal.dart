@@ -10,10 +10,10 @@ class SearchableDropdownModal extends StatefulWidget {
   const SearchableDropdownModal({super.key, this.optionsProvider, this.onOptionsUpdated});
 
   @override
-  _SearchableDropdownModalState createState() => _SearchableDropdownModalState();
+  SearchableDropdownModalState createState() => SearchableDropdownModalState();
 }
 
-class _SearchableDropdownModalState extends State<SearchableDropdownModal> {
+class SearchableDropdownModalState extends State<SearchableDropdownModal> {
   late List<MapEntry<String, String>> options = []; // 初始化為空列表
   String searchKeyword = '';
   int currentPage = 1; // 新增頁次參數

@@ -50,11 +50,13 @@ class MainLayout extends StatelessWidget {
                       entry.value,
                       style: TextStyle(
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                        color: isSelected ? AppColor.drawerSelectedText : AppColor.menuText,
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     selected: isSelected,
-                    selectedTileColor: AppColor.drawerSelectedBackground,
+                    selectedTileColor: Theme.of(context).colorScheme.surface,
                     onTap: () {
                       if (!isSelected) {
                         context.go(entry.key);

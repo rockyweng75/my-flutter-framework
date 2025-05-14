@@ -9,6 +9,7 @@ import 'package:my_flutter_framework/shared/components/tutorial/animations/zoom_
 import 'package:my_flutter_framework/shared/components/tutorial/gesture_type.dart';
 import 'package:my_flutter_framework/shared/components/tutorial/tutorial_step.dart';
 import 'package:my_flutter_framework/styles/app_color.dart';
+import 'package:my_flutter_framework/styles/theme_data.dart';
 
 // 假設你有一個全域 Map<String, GlobalKey> 來註冊元件
 final Map<String, GlobalKey> globalWidgetRegistry = {};
@@ -92,7 +93,11 @@ class _TutorialScreenState extends State<_TutorialScreen> {
       _current = index;
     });
     // 若要動畫可保留 animateToPage，但 UI 切換要靠 setState
-    _controller.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.ease);
+    _controller.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.ease,
+    );
   }
 
   @override
@@ -176,7 +181,12 @@ class _TutorialScreenState extends State<_TutorialScreen> {
                               padding: const EdgeInsets.only(top: 4.0),
                               child: Text(
                                 step.gestureName!,
-                                style: const TextStyle(fontSize: 16, color: Colors.amberAccent, fontStyle: FontStyle.italic),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color:
+                                      Colors.amberAccent,
+                                  fontStyle: FontStyle.italic,
+                                ),
                                 textAlign: TextAlign.center,
                               ),
                             ),
@@ -192,35 +202,44 @@ class _TutorialScreenState extends State<_TutorialScreen> {
                         if (_current > 0)
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColor.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                             ),
                             onPressed: () => _goTo(_current - 1),
                             child: Text(
                               widget.prevLabel,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
                             ),
                           ),
                         const SizedBox(width: 16),
                         if (_current < widget.steps.length - 1)
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColor.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                             ),
                             onPressed: () => _goTo(_current + 1),
                             child: Text(
                               widget.nextLabel,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
                             ),
                           ),
                         if (_current == widget.steps.length - 1)
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColor.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                             ),
                             onPressed: () => Navigator.of(context).pop(),
                             child: Text(
                               widget.doneLabel,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
                             ),
                           ),
                       ],
@@ -249,10 +268,10 @@ class _TutorialScreenState extends State<_TutorialScreen> {
             padding: const EdgeInsets.only(bottom: 12.0),
             child: Text(
               step.title!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                  color: AppColor.white_0xFFFFFFFF,
               ),
               textAlign: TextAlign.center,
             ),
@@ -262,7 +281,10 @@ class _TutorialScreenState extends State<_TutorialScreen> {
             padding: const EdgeInsets.only(bottom: 12.0),
             child: Text(
               step.description!,
-              style: const TextStyle(fontSize: 18, color: Colors.white),
+              style: TextStyle(
+                fontSize: 18,
+                color: AppColor.white_0xFFFFFFFF,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -282,13 +304,19 @@ class _TutorialScreenState extends State<_TutorialScreen> {
       case GestureType.dragRight:
       case GestureType.dragUp:
       case GestureType.dragDown:
-        return DragAnimation(type: type, icon: TutorialStep.gestureIconMap[type]!);
+        return DragAnimation(
+          type: type,
+          icon: TutorialStep.gestureIconMap[type]!,
+        );
       case GestureType.swipe:
       case GestureType.swipeLeft:
       case GestureType.swipeRight:
       case GestureType.swipeUp:
       case GestureType.swipeDown:
-        return SwipeAnimation(type: type, icon: TutorialStep.gestureIconMap[type]!);
+        return SwipeAnimation(
+          type: type,
+          icon: TutorialStep.gestureIconMap[type]!,
+        );
       case GestureType.zoom:
         return ZoomAnimation(icon: TutorialStep.gestureIconMap[type]!);
       case GestureType.rotate:
@@ -305,7 +333,10 @@ class _TutorialScreenState extends State<_TutorialScreen> {
           width: _current == i ? 16 : 8,
           height: 8,
           decoration: BoxDecoration(
-            color: _current == i ? AppColor.primary : Colors.white54,
+            color:
+                _current == i
+                    ? Theme.of(context).colorScheme.primary
+                    : AppColor.white_0xFFFFFFFF,
             borderRadius: BorderRadius.circular(4),
           ),
         );
