@@ -3,10 +3,9 @@ import 'package:file_selector/file_selector.dart';
 import 'package:camera/camera.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:image/image.dart' as img;
 import 'package:my_flutter_framework/shared/components/message_box.dart';
 import 'package:my_flutter_framework/shared/utils/print_type.dart';
+import 'package:my_flutter_framework/shared/utils/image_compress_util.dart';
 
 class ImageUpload extends StatefulWidget {
   final void Function(XFile file)? onImageSelected;
@@ -255,12 +254,11 @@ class _ImageUploadState extends State<ImageUpload> {
                                                           'image/jpeg',
                                                     );
                                                   }
-                                                  // 新增：壓縮到 300KB 以下
                                                   resultFile =
-                                                      await compressImageToTargetSize(
+                                                      await ImageCompressUtil.compressImageToTargetSize(
                                                         resultFile,
                                                         maxSizeBytes:
-                                                            300 * 1024,
+                                                            500 * 1024,
                                                       );
                                                   if (!mounted ||
                                                       !(dialogContext.mounted))
@@ -421,44 +419,6 @@ class _ImageUploadState extends State<ImageUpload> {
         );
       },
     );
-  }
-
-  // 新增：壓縮圖片直到小於 maxSizeBytes
-  Future<XFile> compressImageToTargetSize(
-    XFile file, {
-    int maxSizeBytes = 300 * 1024,
-    int minQuality = 20,
-  }) async {
-    if (kIsWeb) {
-      // web: 用 image 套件壓縮
-      final bytes = await file.readAsBytes();
-      img.Image? image = img.decodeImage(bytes);
-      int quality = 90;
-      Uint8List jpg;
-      do {
-        jpg = Uint8List.fromList(img.encodeJpg(image!, quality: quality));
-        quality -= 10;
-      } while (jpg.length > maxSizeBytes && quality >= minQuality);
-      final now = DateTime.now();
-      final name = 'web_image_${now.millisecondsSinceEpoch}.jpg';
-      return XFile.fromData(jpg, name: name, mimeType: 'image/jpeg');
-    } else {
-      // mobile/desktop: 用 flutter_image_compress
-      int quality = 90;
-      Uint8List result;
-      final bytes = await file.readAsBytes();
-      do {
-        result = Uint8List.fromList(
-          await FlutterImageCompress.compressWithList(
-            bytes,
-            quality: quality,
-            format: CompressFormat.jpeg,
-          ),
-        );
-        quality -= 10;
-      } while (result.length > maxSizeBytes && quality >= minQuality);
-      return XFile.fromData(result, name: file.name, mimeType: 'image/jpeg');
-    }
   }
 
   // 僅供測試用：設定檔名與檔案
