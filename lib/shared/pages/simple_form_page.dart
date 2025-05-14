@@ -7,6 +7,7 @@ import 'package:my_flutter_framework/shared/components/form_builder/dev_form_bui
 import 'package:my_flutter_framework/shared/field_config.dart';
 import 'package:my_flutter_framework/shared/models/custom_style.dart';
 import 'package:my_flutter_framework/styles/app_color.dart';
+import 'package:my_flutter_framework/styles/theme_data.dart';
 
 enum ViewMode { create, edit, view }
 
@@ -88,7 +89,7 @@ abstract class SimpleFormPageState<T extends SimpleFormPage>
                       Flexible(
                         child: CustomButton(
                           label: 'Edit',
-                          style: CustomStyle(backgroundColor: AppColor.btnEdit),
+                          style: CustomStyle(backgroundColor: Theme.of(context).colorScheme.warning),
                           onTap: () {
                             toggleViewMode(); // 切換為編輯模式
                           },
@@ -101,7 +102,7 @@ abstract class SimpleFormPageState<T extends SimpleFormPage>
                           child: CustomButton(
                             label: 'Delete',
                             style: CustomStyle(
-                              backgroundColor: AppColor.btnDelete,
+                              backgroundColor: Theme.of(context).colorScheme.error,
                             ),
                             onTap: () {
                               onDelete.call(
@@ -114,7 +115,7 @@ abstract class SimpleFormPageState<T extends SimpleFormPage>
                       Flexible(
                         child: CustomButton(
                           label: 'Submit',
-                          style: CustomStyle(backgroundColor: AppColor.btnCreate),
+                          style: CustomStyle(backgroundColor: Theme.of(context).colorScheme.success),
                           onTap: () {
                             if (formKey.currentState?.saveAndValidate() ?? false) {
                               onSave.call(

@@ -7,12 +7,39 @@ final ThemeData appTheme = ThemeData(
   colorScheme: ColorScheme.fromSwatch().copyWith(
     primary: AppColor.primary,
     secondary: AppColor.info,
-    surface: AppColor.background,
+    // surface: AppColor.background,
     error: AppColor.danger,
     // 自訂 success 與 warning
-    brightness: Brightness.light,
-    // ignore: invalid_annotation_target
-    // ignore: deprecated_member_use
+    // brightness: Brightness.light,
+  ),
+  textTheme: const TextTheme(
+    bodyLarge: TextStyle(fontSize: 16.0, color: Colors.black),
+    bodyMedium: TextStyle(fontSize: 14.0, color: Colors.black87),
+    bodySmall: TextStyle(fontSize: 12.0, color: Colors.black54),
+    titleLarge: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.black),
+    titleMedium: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.black87),
+    titleSmall: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.black54),
+    labelLarge: TextStyle(fontSize: 16.0, color: Colors.black),
+    labelMedium: TextStyle(fontSize: 14.0, color: Colors.black87),
+    labelSmall: TextStyle(fontSize: 12.0, color: Colors.black54),
+    displayLarge: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold, color: Colors.black),
+    displayMedium: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: Colors.black87),
+    displaySmall: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.black54),
+  ),
+  inputDecorationTheme: const InputDecorationTheme(
+    border: OutlineInputBorder(),
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.grey),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.blue, width: 2.0),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.red),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.red, width: 2.0),
+    ),
   ),
 ).copyWith(
   // 透過 extension 或 copyWith 增加自訂色彩
@@ -32,6 +59,35 @@ final ThemeData appDarkTheme = ThemeData(
     error: AppColor.dangerDark,
     // 自訂 success 與 warning
     brightness: Brightness.dark,
+  ),
+  textTheme: const TextTheme(
+    bodyLarge: TextStyle(fontSize: 16.0, color: Colors.white),
+    bodyMedium: TextStyle(fontSize: 14.0, color: Colors.white70),
+    bodySmall: TextStyle(fontSize: 12.0, color: Colors.white60),
+    titleLarge: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white),
+    titleMedium: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.white70),
+    titleSmall: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.white60),
+    labelLarge: TextStyle(fontSize: 16.0, color: Colors.white),
+    labelMedium: TextStyle(fontSize: 14.0, color: Colors.white70),
+    labelSmall: TextStyle(fontSize: 12.0, color: Colors.white60),
+    displayLarge: TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold, color: Colors.white),
+    displayMedium: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: Colors.white70),
+    displaySmall: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.white60),
+  ),
+  inputDecorationTheme: const InputDecorationTheme(
+    border: OutlineInputBorder(),
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.white70),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.lightBlueAccent, width: 2.0),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.redAccent),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.redAccent, width: 2.0),
+    ),
   ),
 ).copyWith(
   extensions: <ThemeExtension<dynamic>>[

@@ -10,9 +10,9 @@ class AppColor {
   static const Color background = Color(0xFFFFFFFF); // 背景色 (灰階)
   static const Color backgroundDark = Color(0xFF303030); // 背景色 (黑色)
   /// 偶數卡片背景色
-  static const Color cardEvenBackground = white_0xFFFFFFFF;
+  static const Color cardEvenBackground = Color(0xFFEFEFEF);
   /// 奇數卡片背景色
-  static const Color cardOddBackground = Color(0xFFF5F5F5);
+  static const Color cardOddBackground = Color(0xFFE0D0D0);
   /// Drawer header background color
   static const Color drawerHeaderBackground = Color(0xFF2196F3);
   static const Color success = Color(0xFF4CAF50); // 成功

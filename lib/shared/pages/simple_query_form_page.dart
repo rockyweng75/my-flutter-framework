@@ -117,11 +117,8 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
                 type: ButtonType.icon,
                 icon: icon,
                 style: CustomStyle(
-                  backgroundColor: AppColor.menuBackground,
-                  textStyle: TextStyle(
-                    color: AppColor.menuText,
-                    fontSize: 16.0,
-                  ),
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  textStyle: Theme.of(context).textTheme.bodyMedium,
                   border: Border.all(color: AppColor.menuBorder, width: 1.0),
                 ),
                 onTap: onTap,
@@ -137,7 +134,7 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
                 width: 10,
                 height: 10,
                 decoration: BoxDecoration(
-                  color: Colors.red,
+                  color: Theme.of(context).colorScheme.error,
                   shape: BoxShape.circle,
                 ),
               ),

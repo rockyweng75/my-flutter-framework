@@ -30,7 +30,7 @@ abstract class SimpleListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white, // 父容器的背景色
+      color: Theme.of(context).colorScheme.surface, // 父容器的背景色
       child: Stack(
         children: [
           Material(

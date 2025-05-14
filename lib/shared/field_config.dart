@@ -210,7 +210,7 @@ class FieldConfig {
                       padding: const EdgeInsets.only(top: 4.0),
                       child: Text(
                         field.errorText ?? '',
-                        style: TextStyle(color: Colors.red, fontSize: 12),
+                        style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
                       ),
                     ),
                 ],
@@ -237,7 +237,7 @@ class FieldConfig {
                   padding: const EdgeInsets.only(top: 4.0),
                   child: Text(
                     field.errorText ?? '',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
                   ),
                 ),
             ],

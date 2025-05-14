@@ -101,7 +101,7 @@ class _MessageBoxPageState extends MainLayoutPage<MessageBoxPage> {
     final String cardId = _cardKeyId(type);
     final String btnId = _buttonKeyId(type);
     return Card(
-      color: AppColor.cardOddBackground,
+      color: Theme.of(context).colorScheme.surface,
       key: _cardKeys[cardId], // 用 GlobalKey
       child: ListTile(
         title: Row(
