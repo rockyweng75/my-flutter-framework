@@ -20,7 +20,6 @@ class _SwipePageDemoState extends MainLayoutPage<SwipePageDemo> {
   late final ISwipePageService _pageService;
   int _pageCount = 3;
   bool _isLoadingMore = false;
-  late final Map<String, GlobalKey> _pageKeys;
 
   @override
   void initState() {
@@ -43,9 +42,9 @@ class _SwipePageDemoState extends MainLayoutPage<SwipePageDemo> {
     });
   }
 
-  String _pageKeyId(int index) {
-    return 'swipePageView_${index.toString().padLeft(2, '0')}';
-  }
+  // String _pageKeyId(int index) {
+  //   return 'swipePageView_${index.toString().padLeft(2, '0')}';
+  // }
 
   @override
   void dispose() {
@@ -55,7 +54,7 @@ class _SwipePageDemoState extends MainLayoutPage<SwipePageDemo> {
 
   Widget _buildPage(Color color, String text) {
     return Container(
-      key: globalWidgetRegistry[_pageKeyId(_pageCount)],
+      // key: globalWidgetRegistry[_pageKeyId(_pageCount)],
       color: color,
       child: Center(
         child: Text(
@@ -85,13 +84,13 @@ class _SwipePageDemoState extends MainLayoutPage<SwipePageDemo> {
       height:
           MediaQuery.of(context).size.height - kToolbarHeight, // 減去 AppBar 高度
       child: SwipePageView(
-        key: globalWidgetRegistry['swipePageView'], // 註冊 key
+        key: globalWidgetRegistry['swipePageDemo'], // 註冊 key
         controller: _pageController,
         pages: List.generate(
           _pageCount,
           (i) => i == 0
               ? Container(
-                  key: globalWidgetRegistry['swipePageDemo'], // 註冊 key
+                  // key: globalWidgetRegistry['swipePageDemo'], // 註冊 key
                   child: _buildPage(colors[i % colors.length], 'Page ${i + 1}'),
                 )
               : _buildPage(colors[i % colors.length], 'Page ${i + 1}'),
@@ -148,7 +147,7 @@ class _SwipePageDemoState extends MainLayoutPage<SwipePageDemo> {
     TutorialStep(
       title: 'Swipe Page View',
       description: '這是一個可滑動的頁面視圖，支援無限加載更多頁面。',
-      targetWidgetId: 'swipePageView',
+      targetWidgetId: 'swipePageDemo',
       gestureType: GestureType.swipeRight,
     ),
   ];
