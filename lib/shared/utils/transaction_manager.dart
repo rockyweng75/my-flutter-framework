@@ -7,7 +7,6 @@ class TransactionManager {
 
   Future<T?> execute<T>(Future<T> Function() action) async {
     _showLoading();
-
     try {
       final result = await action(); // 執行非同步請求
       return result; // 回傳結果

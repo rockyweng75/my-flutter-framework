@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:my_flutter_framework/database/user_repository.dart';
 import 'package:my_flutter_framework/pages/buttons/drag_confirm_button_demo_page.dart';
 import 'package:my_flutter_framework/pages/home/dashboard_page.dart';
@@ -7,10 +6,11 @@ import 'package:my_flutter_framework/pages/login/login_page.dart';
 import 'package:my_flutter_framework/pages/message/message_box_page.dart';
 import 'package:my_flutter_framework/pages/swipe_page_demo.dart';
 import 'package:my_flutter_framework/pages/todo/todo_page.dart';
-import 'package:my_flutter_framework/shared/pages/balloon_shooting_game_page.dart';
 import 'package:my_flutter_framework/shared/pages/internal_error_page.dart';
 import 'package:my_flutter_framework/shared/pages/not_found_page.dart';
 import 'package:go_router/go_router.dart';
+import 'package:my_flutter_framework/pages/image_upload_demo_page.dart';
+import 'package:my_flutter_framework/pages/image_compress_demo_page.dart';
 
 typedef RouteBuilder =
     Widget Function(BuildContext context, GoRouterState state);
@@ -18,8 +18,6 @@ typedef RouteBuilder =
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class AppRouter {
-  final Logger _logger = Logger();
-
   static const String indexRoute = '/dashboard';
   static const String loginRoute = '/login';
   static const String initialRoute = loginRoute;
@@ -31,6 +29,8 @@ class AppRouter {
     '/message_box': (context, state) => const MessageBoxPage(),
     '/drag_confirm': (context, state) => const DragConfirmButtonDemoPage(),
     '/swipe_page_demo': (context, state) => const SwipePageDemo(),
+    '/image_upload_demo': (context, state) => const ImageUploadDemoPage(),
+    '/image_compress_demo': (context, state) => const ImageCompressDemoPage(),
     '/500':
         (context, state) => const InternalErrorPage(redirectPath: indexRoute),
   };
@@ -81,6 +81,8 @@ class AppRouter {
     '/message_box': 'Message Box',
     '/drag_confirm': 'Drag Confirm Button',
     '/swipe_page_demo': 'Swipe Page Demo',
+    '/image_upload_demo': 'Image Upload Demo',
+    '/image_compress_demo': 'Image Compress Demo',
   };
 
   static final List<String> hiddenMenus = ['/login'];

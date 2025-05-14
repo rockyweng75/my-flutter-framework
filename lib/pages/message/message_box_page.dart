@@ -5,7 +5,6 @@ import 'package:my_flutter_framework/shared/components/message_box.dart';
 import 'package:my_flutter_framework/shared/components/tutorial/tutorial_button.dart';
 import 'package:my_flutter_framework/shared/components/tutorial/tutorial_step.dart';
 import 'package:my_flutter_framework/shared/utils/print_type.dart';
-import 'package:my_flutter_framework/styles/app_color.dart';
 
 // 引入 ValueKey 以便於 id 註冊
 class MessageBoxPage extends ConsumerStatefulWidget {
