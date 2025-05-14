@@ -19,14 +19,14 @@ class SearchableDropdownField extends StatefulWidget {
     required this.formKey,
     this.validator,
     this.enabled = true,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  _SearchableDropdownFieldState createState() => _SearchableDropdownFieldState();
+  SearchableDropdownFieldState createState() => SearchableDropdownFieldState();
 }
 
-class _SearchableDropdownFieldState extends State<SearchableDropdownField> {
+class SearchableDropdownFieldState extends State<SearchableDropdownField> {
   String? _displayedLabel;
   Map<String, String>? _options;
 

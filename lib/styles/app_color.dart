@@ -38,4 +38,8 @@ class AppColor {
   static const Color btnCreate = Colors.green; // 新增按鈕顏色
   static const Color btnDelete = Colors.red; // 刪除按鈕顏色
   static const Color blockBackground = Color.fromARGB(122, 0, 0, 0); // Block 背景色 (黑色)
+  /// Drawer 選單被選取時的背景色
+  static const Color drawerSelectedBackground = Color(0xFFE3F2FD); // 較淺藍
+  /// Drawer 選單被選取時的文字色
+  static const Color drawerSelectedText = primary; // 主要色
 }
