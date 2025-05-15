@@ -17,6 +17,7 @@ class FieldConfig {
   )?
   optionsProvider;
   bool enabled;
+  final bool hidden; // 新增 hidden 屬性
 
   FieldConfig({
     required this.name,
@@ -26,6 +27,7 @@ class FieldConfig {
     this.type = FieldType.text,
     this.optionsProvider,
     this.enabled = true,
+    this.hidden = false, // 預設不隱藏
   }) : assert(
          type != FieldType.dropdown || optionsProvider != null,
          'optionsProvider must be provided for dropdown type',
@@ -44,6 +46,7 @@ class FieldConfig {
 
   // 根據輸入框類型返回對應的組件
   Widget getFormBuilderField(context, formKey) {
+
     switch (type) {
       case FieldType.text:
         return FormBuilderTextField(
@@ -210,7 +213,10 @@ class FieldConfig {
                       padding: const EdgeInsets.only(top: 4.0),
                       child: Text(
                         field.errorText ?? '',
-                        style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                 ],
@@ -223,25 +229,29 @@ class FieldConfig {
           validator: validator as String? Function(String?)?,
           enabled: enabled,
           initialValue: value,
-          builder: (field) => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ImageUpload(
-                label: label,
-                onImageSelected: (file) {
-                  field.didChange(file.path);
-                },
-              ),
-              if (field.hasError)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: Text(
-                    field.errorText ?? '',
-                    style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
+          builder:
+              (field) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ImageUpload(
+                    label: label,
+                    onImageSelected: (file) {
+                      field.didChange(file.path);
+                    },
                   ),
-                ),
-            ],
-          ),
+                  if (field.hasError)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Text(
+                        field.errorText ?? '',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
         );
       default:
         throw UnimplementedError('FieldType not supported: $type');

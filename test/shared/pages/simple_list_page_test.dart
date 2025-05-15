@@ -27,7 +27,7 @@ class TestSimpleListPage extends SimpleListPage {
 }
 
 class TestSimpleQueryFormPage extends SimpleQueryFormPage {
-  const TestSimpleQueryFormPage({
+  TestSimpleQueryFormPage({
     super.key,
     super.fieldSpacing = 20.0,
     super.onFormSubmit,
@@ -74,7 +74,7 @@ void main() async {
       // Arrange
       final scrollController = ScrollController();
       final simpleListPage = TestSimpleListPage(
-        items: [],
+        items: [{'id': 1}], // 必須有一筆資料才會顯示 loading indicator
         scrollController: scrollController,
         isLoading: true,
         isScreenLocked: false,

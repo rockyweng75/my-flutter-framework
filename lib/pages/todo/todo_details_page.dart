@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:my_flutter_framework/api/assignee/iassignee_service.dart';
-import 'package:my_flutter_framework/api/todos/itodo_service.dart';
 import 'package:my_flutter_framework/models/assignee.dart';
 import 'package:my_flutter_framework/shared/field_config.dart';
 import 'package:my_flutter_framework/shared/pages/simple_form_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:io';
+import 'package:my_flutter_framework/database/todo_repository.dart';
+import 'package:my_flutter_framework/models/todo.dart';
 
 class TodoDetailsPage extends SimpleFormPage {
   final Map<String, dynamic> todo;
 
-  TodoDetailsPage({
+  const TodoDetailsPage({
     required this.todo,
     super.viewMode = ViewMode.view,
     super.key,
+    super.id,
   }) : super(title: 'Todo Details');
 
   @override
@@ -23,13 +24,11 @@ class TodoDetailsPage extends SimpleFormPage {
 
 class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
   late final IAssigneeService _assigneeService;
-  late final ITodoService _todoService;
 
   @override
   void initState() {
     super.initState();
     _assigneeService = ref.read(assigneeServiceProvider);
-    _todoService = ref.read(todoServiceProvider);
   }
 
   @override
@@ -59,30 +58,49 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
         enabled: !isViewMode,
       ),
       FieldConfig(
-        name: 'description',
-        label: 'Description',
-        value: widget.todo['description'],
+        name: 'content',
+        label: 'Content',
+        value: widget.todo['content'],
         enabled: !isViewMode,
       ),
       FieldConfig(
-        name: 'dueDate',
-        label: 'Due Date',
-        value: widget.todo['dueDate'],
+        name: 'startTime',
+        label: 'Start Time',
+        value: widget.todo['startTime'],
         type: FieldType.datePicker,
-        validator: FormBuilderValidators.compose([
-          FormBuilderValidators.required(),
-        ]),
+        validator: FormBuilderValidators.required(),
         enabled: !isViewMode,
       ),
       FieldConfig(
-        name: 'priority',
-        label: 'Priority',
-        value: widget.todo['priority'],
+        name: 'endTime',
+        label: 'End Time',
+        value: widget.todo['endTime'],
+        type: FieldType.datePicker,
+        validator: FormBuilderValidators.required(),
+        enabled: !isViewMode,
+      ),
+      FieldConfig(
+        name: 'status',
+        label: 'Status',
+        value: widget.todo['status'],
         type: FieldType.dropdown,
         optionsProvider: (keyword, page, perPage) async {
-          return {'low': 'Low', 'medium': 'Medium', 'high': 'High'};
+          return {'open': 'Open', 'done': 'Done', 'pending': 'Pending'};
         },
         validator: FormBuilderValidators.required(),
+        enabled: !isViewMode,
+      ),
+      FieldConfig(
+        name: 'location',
+        label: 'Location',
+        value: widget.todo['location'],
+        enabled: !isViewMode,
+      ),
+      FieldConfig(
+        name: 'attachments',
+        label: 'Attachments',
+        value: widget.todo['attachments'],
+        type: FieldType.fileUpload,
         enabled: !isViewMode,
       ),
       FieldConfig(
@@ -91,8 +109,8 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
         value: widget.todo['assignee'],
         type: FieldType.searchableDropdown,
         optionsProvider: (keyword, page, perPage) async {
-          final resolvedPage = page ?? 1; // 預設值為 1
-          final resolvedPerPage = perPage ?? 20; // 預設值為 20
+          final resolvedPage = page ?? 1;
+          final resolvedPerPage = perPage ?? 20;
           final assignees = await _fetchAssignees(
             keyword: keyword,
             page: resolvedPage,
@@ -104,64 +122,55 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
             ),
           );
         },
-        validator: FormBuilderValidators.required(),
-        enabled: !isViewMode,
-      ),
-      FieldConfig(
-        name: 'image',
-        label: '圖片',
-        type: FieldType.imageUpload,
-        validator: (value) {
-          if (value == null || value.isEmpty) return '請選擇圖片';
-          final file = File(value);
-          if (!file.existsSync()) return '圖片不存在';
-          final size = file.lengthSync();
-          if (size > 5 * 1024 * 1024) return '圖片需小於 5MB';
-          return null;
-        },
-        enabled: !isViewMode,
-      ),
-
-      FieldConfig(
-        name: 'file',
-        label: '檔案',
-        type: FieldType.fileUpload,
-        validator: (value) {
-          if (value == null || value.isEmpty) return '請選擇檔案';
-          final file = File(value);
-          if (!file.existsSync()) return '檔案不存在';
-          final size = file.lengthSync();
-          if (size > 5 * 1024 * 1024) return '檔案需小於 5MB';
-          return null;
-        },
-        enabled: !isViewMode,
+        enabled: !isViewMode, // 保證為 bool
       ),
     ];
   }
 
   @override
-  Future<void> onSave(Map<String, dynamic> formData) async {
+  Future<void> onSave(dynamic id, Map<String, dynamic> formData) async {
     if (isViewMode) return;
-
+    // 將 DateTime 轉為字串，避免 fromJson 型別錯誤
+    Map<String, dynamic> safeFormData = Map.from(formData);
+    for (var key in ['startTime', 'endTime']) {
+      if (safeFormData[key] is DateTime) {
+        safeFormData[key] = (safeFormData[key] as DateTime).toIso8601String();
+      }
+    }
     if (isEditMode) {
-      // 編輯模式下，更新 Todo
-      final updatedTodo = {...widget.todo, ...formData};
-      await _todoService.updateTodo(widget.todo['id'], updatedTodo);
-      Navigator.pop(context, updatedTodo);
+      final updatedTodo = Todo.fromJson({
+        'id': id,
+        ...widget.todo,
+        ...safeFormData,
+      });
+      await TodoRepository.upsertTodo(updatedTodo);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('儲存成功')),
+        );
+        // 確保回傳 Map<String, dynamic> 結構
+        Navigator.pop(context, updatedTodo.toJson());
+      }
     } else if (isCreateMode) {
-      // 創建模式下，創建新的 Todo
-      final newTodo = {...formData};
-      await _todoService.addTodo(newTodo);
-      Navigator.pop(context, newTodo);
+      final newTodo = Todo.fromJson({
+        'id': id,
+        ...safeFormData,
+      });
+      final created = await TodoRepository.addTodo(newTodo);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('新增成功')),
+        );
+        // 確保回傳 Map<String, dynamic> 結構
+        Navigator.pop(context, created.toJson());
+      }
     }
   }
 
   @override
-  Future<void> onDelete(Map<String, dynamic> formData) async {
+  Future<void> onDelete(dynamic id, Map<String, dynamic> formData) async {
     if (isViewMode) return;
-
-    // 刪除 Todo
-    await _todoService.deleteTodo(widget.todo['id']);
+    await TodoRepository.deleteTodo(widget.todo['id']);
     Navigator.pop(context, null);
   }
 }

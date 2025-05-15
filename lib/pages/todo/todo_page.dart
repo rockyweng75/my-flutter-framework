@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:my_flutter_framework/api/todos/itodo_service.dart';
+import 'package:logger/logger.dart';
+import 'package:my_flutter_framework/database/todo_repository.dart';
 import 'package:my_flutter_framework/pages/layout/main_layout_page.dart';
 import 'package:my_flutter_framework/pages/todo/todo_details_page.dart';
 import 'package:my_flutter_framework/pages/todo/todo_list_page.dart';
+import 'package:my_flutter_framework/shared/components/tutorial/gesture_type.dart';
+import 'package:my_flutter_framework/shared/components/tutorial/tutorial_button.dart';
+import 'package:my_flutter_framework/shared/components/tutorial/tutorial_step.dart';
 import 'package:my_flutter_framework/shared/pages/simple_form_page.dart';
-import 'package:my_flutter_framework/shared/utils/transaction_manager.dart';
+import 'package:my_flutter_framework/shared/pages/simple_list_page.dart';
+import 'package:my_flutter_framework/shared/pages/simple_query_form_page.dart';
 import 'package:my_flutter_framework/styles/app_color.dart';
 
 class TodoPage extends ConsumerStatefulWidget {
-  const TodoPage({Key? key}) : super(key: key);
+  const TodoPage({super.key});
 
   @override
   ConsumerState<TodoPage> createState() => _TodoPageState();
 }
 
 class _TodoPageState extends MainLayoutPage<TodoPage> {
-  late ITodoService _todoService;
+  final Logger _logger = Logger();
   final ScrollController _scrollController = ScrollController();
   int _currentPage = 1;
   List<Map<String, dynamic>> _todos = [];
@@ -24,26 +29,12 @@ class _TodoPageState extends MainLayoutPage<TodoPage> {
   bool _hasNextPage = true;
   bool _isScreenLocked = false;
 
-  // void _lockScreen() {
-  //   if (mounted) {
-  //     setState(() {
-  //       _isScreenLocked = true;
-  //     });
-  //   }
-  // }
-
-  // void _unlockScreen() {
-  //   if (mounted) {
-  //     setState(() {
-  //       _isScreenLocked = false;
-  //     });
-  //   }
-  // }
+  // 教學導引元件 key
+  final GlobalKey _addButtonKey = GlobalKey(debugLabel: 'addButton');
 
   @override
   void initState() {
     super.initState();
-    _todoService = ref.read(todoServiceProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadInitialTodos(context);
     });
@@ -56,96 +47,74 @@ class _TodoPageState extends MainLayoutPage<TodoPage> {
   }
 
   Future<void> _loadInitialTodos(context) async {
-    TransactionManager transactionManager = TransactionManager(context);
-    await transactionManager.execute(() async {
-      final response = await _todoService.getTodos(
-        page: _currentPage,
-        pageSize: 8,
-      );
-      if (mounted) {
-        setState(() {
-          _todos = response.data;
-          _currentPage = 1;
-          _hasNextPage = response.data.isNotEmpty;
-        });
-      }
+    setState(() {
+      _isLoading = true;
     });
-    // _lockScreen();
-    // final response = await _todoService.getTodos(page: 1, pageSize: 8);
-    // if (mounted) {
-    //   setState(() {
-    //     _todos = response.data;
-    //     _currentPage = 1;
-    //     _hasNextPage = response.data.isNotEmpty;
-    //   });
-    // }
-    // _unlockScreen();
+    final todos = await TodoRepository.getAllTodos(page: 1, pageSize: 8);
+    setState(() {
+      _todos = todos.map((e) => e.toJson()).toList();
+      _currentPage = 1;
+      _hasNextPage = todos.length == 8;
+      _isLoading = false;
+    });
   }
 
   Future<void> _loadMoreTodos(
     context,
     Map<String, dynamic>? queryParameters,
   ) async {
-    TransactionManager transactionManager = TransactionManager(context);
-
     if (_isLoading || !_hasNextPage) return;
-
-    // if (mounted) {
-    //   setState(() {
-    //     _isLoading = true;
-    //   });
-    // }
-    await transactionManager.execute(() async {
-      setState(() {
-        _isLoading = true;
-      });
-
-      final nextPage = _currentPage + 1;
-      final response = await _todoService.getTodos(page: nextPage, pageSize: 8);
-      if (response.data.isNotEmpty) {
-        if (mounted) {
-          setState(() {
-            _todos.addAll(response.data);
-            _currentPage = nextPage;
-          });
-        }
-      }
-
-      if (response.data.isEmpty || response.data.length < 8) {
-        if (mounted) {
-          setState(() {
-            _hasNextPage = false;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _hasNextPage = true;
-          });
-        }
-      }
-
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    setState(() {
+      _isLoading = true;
+    });
+    final nextPage = _currentPage + 1;
+    final todos = await TodoRepository.getAllTodos(page: nextPage, pageSize: 8);
+    setState(() {
+      _todos.addAll(todos.map((e) => e.toJson()));
+      _currentPage = nextPage;
+      _hasNextPage = todos.length == 8;
+      _isLoading = false;
     });
   }
 
   @override
   Widget buildContent(BuildContext context) {
+    // 註冊教學元件 key
+    globalWidgetRegistry['addButton'] = _addButtonKey;
+
     return TodoListPage(
       items: _todos,
       scrollController: _scrollController,
       isLoading: _isLoading,
       isScreenLocked: _isScreenLocked,
       onLoadMore: (params) => _loadMoreTodos(context, params),
-      onItemTap: (todo) {
-        Navigator.push(
+      onItemTap: (todo) async {
+        final result = await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => TodoDetailsPage(todo: todo)),
+          MaterialPageRoute(
+            builder: (context) => TodoDetailsPage(todo: todo, id: todo['id']),
+          ),
         );
+        _logger.d('result: $result');
+        if (result != null &&
+            result is Map<String, dynamic> &&
+            result['id'] != null) {
+          // 單筆更新：找到 id 相同的 todo，直接更新
+          final idx = _todos.indexWhere((t) => t['id'] == result['id']);
+          if (idx != -1) {
+            if (mounted) {
+              setState(() {
+                _todos[idx] = Map<String, dynamic>.from(result);
+                _todos = List<Map<String, dynamic>>.from(_todos); // 強制刷新
+              });
+            }
+          } else {
+            // 若找不到，代表是新增，直接刷新全部
+            if (mounted) {
+              await _loadInitialTodos(context);
+            }
+          }
+        }
       },
       rowBuilder: (context, item) {
         final index = _todos.indexOf(item);
@@ -157,26 +126,47 @@ class _TodoPageState extends MainLayoutPage<TodoPage> {
           margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
           child: ListTile(
             leading: Icon(
-              item['completed'] ? Icons.check_circle : Icons.circle,
-              color: item['completed'] ? Colors.green : Colors.grey,
+              item['status'] == 'done' ? Icons.check_circle : Icons.circle,
+              color:
+                  item['status'] == 'done' ? AppColor.success : AppColor.info,
             ),
             title: Text(
               item['title'],
               style: TextStyle(
                 decoration:
-                    item['completed']
+                    item['status'] == 'done'
                         ? TextDecoration.lineThrough
                         : TextDecoration.none,
               ),
             ),
             subtitle: Text('ID: ${item['id']}'),
-            onTap:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TodoDetailsPage(todo: item),
-                  ),
+            onTap: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => TodoDetailsPage(todo: item, id: item['id']),
                 ),
+              );
+              _logger.d('result: $result');
+              if (result != null &&
+                  result is Map<String, dynamic> &&
+                  result['id'] != null) {
+                final idx = _todos.indexWhere((t) => t['id'] == result['id']);
+                if (idx != -1) {
+                  if (mounted) {
+                    setState(() {
+                      _todos[idx] = Map<String, dynamic>.from(result);
+                      _todos = List<Map<String, dynamic>>.from(_todos);
+                    });
+                  }
+                } else {
+                  if (mounted) {
+                    await _loadInitialTodos(context);
+                  }
+                }
+              }
+            },
           ),
         );
       },
@@ -186,6 +176,7 @@ class _TodoPageState extends MainLayoutPage<TodoPage> {
   @override
   Widget? buildFloatingActionButton(BuildContext context) {
     return FloatingActionButton(
+      key: _addButtonKey,
       onPressed: () async {
         final result = await Navigator.push(
           context,
@@ -193,25 +184,45 @@ class _TodoPageState extends MainLayoutPage<TodoPage> {
             builder:
                 (context) => TodoDetailsPage(
                   todo: {
-                    'id': DateTime.now().millisecondsSinceEpoch,
+                    'id': 0,
                     'title': '',
-                    'completed': false,
+                    'startTime': DateTime.now().toIso8601String(),
+                    'endTime': DateTime.now().toIso8601String(),
+                    'status': 'open',
                   },
+                  id: 0,
                   viewMode: ViewMode.create, // 傳遞一個參數來標記為編輯模式
                 ),
           ),
         );
-
         if (result != null && result is Map<String, dynamic>) {
-          // _lockScreen();
-          _todoService.addTodo(result);
+          // 新增或編輯成功後自動刷新列表
           await _loadInitialTodos(context);
-          // _unlockScreen();
         }
       },
       child: const Icon(Icons.add),
     );
   }
+
+  @override
+  List<TutorialStep>? getTutorialSteps(BuildContext context) {
+    final listSteps = SimpleListPage.tutorialSteps;
+    final querySteps = SimpleQueryFormPage.tutorialSteps;
+    return [
+      ...tutorialSteps,
+      ...listSteps,
+      ...querySteps,
+    ];
+  }
+
+  final List<TutorialStep> tutorialSteps = [
+    TutorialStep(
+      title: '新增任務',
+      description: '點擊右下角的按鈕來新增任務。',
+      targetWidgetId: 'addButton',
+      gestureType: GestureType.tap,
+    )
+  ];
 
   @override
   void dispose() {

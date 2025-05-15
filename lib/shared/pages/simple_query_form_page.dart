@@ -4,6 +4,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_flutter_framework/shared/components/custom_button.dart';
 import 'package:my_flutter_framework/shared/components/form_builder/dev_form_builder.dart';
+import 'package:my_flutter_framework/shared/components/tutorial/tutorial_button.dart';
+import 'package:my_flutter_framework/shared/components/tutorial/tutorial_step.dart';
 import 'package:my_flutter_framework/shared/field_config.dart';
 import 'package:my_flutter_framework/shared/models/custom_style.dart';
 import 'package:my_flutter_framework/shared/order_config.dart';
@@ -15,18 +17,65 @@ abstract class SimpleQueryFormPage extends ConsumerStatefulWidget {
   final double fieldSpacing;
   final Function(Map<String, dynamic>)? onFormSubmit; // 新增回調函數
 
-  const SimpleQueryFormPage({
+  SimpleQueryFormPage({
     super.key,
     this.fieldSpacing = 20.0,
     this.child, // 接收子層
     this.onFormSubmit, // 接收回調函數
   });
+
+
+
+  /// 提供本頁教學步驟
+  static List<TutorialStep> get tutorialSteps => [
+    TutorialStep(
+      title: '查詢控制項',
+      description: '可點擊查詢按鈕開啟查詢表單。',
+      targetWidgetId: 'actionFormKey',
+    ),
+    TutorialStep(
+      title: '查詢表單',
+      description: '可於此輸入條件查詢資料。',
+      targetWidgetId: 'simpleQueryForm',
+    ),
+    TutorialStep(
+      title: '排序功能',
+      description: '可點擊排序按鈕調整資料順序。',
+      targetWidgetId: 'simpleOrderForm',
+    ),
+    TutorialStep(
+      title: '清除條件',
+      description: '可點擊清除按鈕清除查詢條件。',
+      targetWidgetId: 'simpleClearButton',
+    ),
+  ];
 }
 
 /// 用來自訂查詢表單的頁面
 abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
     extends ConsumerState<T> {
   late GlobalKey<FormBuilderState> formKey; // 定義表單的 key
+  late final Map<String, GlobalKey> _buttonKeys;
+  /// 教學導引元件 key
+  final GlobalKey _actionFormKey = GlobalKey(debugLabel: 'actionFormKey');
+
+  @override
+  void initState() {
+    super.initState();
+    _registerKeys();
+  }
+
+  void _registerKeys() {
+    _buttonKeys = {
+      'simpleQueryForm': GlobalKey(),
+      'simpleOrderForm': GlobalKey(),
+      'simpleClearButton': GlobalKey(),
+    };
+    globalWidgetRegistry['actionFormKey'] = _actionFormKey;
+    _buttonKeys.forEach((id, key) {
+      globalWidgetRegistry[id] = key;
+    });
+  }
 
   // 用於存儲查詢和排序表單的資料
   Map<String, dynamic> formDataStorage = {
@@ -42,21 +91,23 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
       testMode: dotenv.env['DEBUG_MODE'] == 'true',
       key: formKey,
       initialValue: formDataStorage['search'].cast<String, dynamic>(), // 顯式轉換類型
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ...getFields()
-              .map(
-                (field) => Padding(
-                  padding: EdgeInsets.only(
-                    bottom: (widget as SimpleQueryFormPage).fieldSpacing,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ...getFields()
+                .map(
+                  (field) => Padding(
+                    padding: EdgeInsets.only(
+                      bottom: (widget as SimpleQueryFormPage).fieldSpacing,
+                    ),
+                    child: field.getFormBuilderField(context, formKey),
                   ),
-                  child: field.getFormBuilderField(context, formKey),
-                ),
-              )
-              .toList(),
-          const SizedBox(height: 20),
-        ],
+                )
+                .toList(),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
@@ -66,28 +117,30 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
       testMode: dotenv.env['DEBUG_MODE'] == 'true',
       initialValue: formDataStorage['sort'].cast<String, dynamic>(), // 顯式轉換類型
       key: formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 確保 order 字段存在於表單中
-          FormBuilderField(
-            name: 'order',
-            builder: (FormFieldState<dynamic> field) {
-              return const SizedBox.shrink(); // 隱藏該字段，僅用於存儲值
-            },
-          ),
-          ...getOrderFields()
-              .map(
-                (field) => Padding(
-                  padding: EdgeInsets.only(
-                    bottom: (widget as SimpleQueryFormPage).fieldSpacing,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 確保 order 字段存在於表單中
+            FormBuilderField(
+              name: 'order',
+              builder: (FormFieldState<dynamic> field) {
+                return const SizedBox.shrink(); // 隱藏該字段，僅用於存儲值
+              },
+            ),
+            ...getOrderFields()
+                .map(
+                  (field) => Padding(
+                    padding: EdgeInsets.only(
+                      bottom: (widget as SimpleQueryFormPage).fieldSpacing,
+                    ),
+                    child: field.getOrderField(context, formKey, state),
                   ),
-                  child: field.getOrderField(context, formKey, state),
-                ),
-              )
-              .toList(),
-          const SizedBox(height: 20),
-        ],
+                )
+                .toList(),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
@@ -98,12 +151,19 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
     '清除': false,
   };
 
+  Map<String, String> buttonKeyMapping = {
+    '查詢': 'simpleQueryForm',
+    '排序': 'simpleOrderForm',
+    '清除': 'simpleClearButton',
+  };
+
   Widget _buildActionButtonWithBadge(
     String label,
     Icon icon,
     VoidCallback onTap,
   ) {
     return Padding(
+      key: _buttonKeys[buttonKeyMapping[label]]!,
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Stack(
         clipBehavior: Clip.none,
@@ -246,8 +306,10 @@ abstract class SimpleQueryFormPageState<T extends SimpleQueryFormPage>
   @override
   Widget build(BuildContext context) {
     formKey = GlobalKey<FormBuilderState>(); // 定義表單的 key
+    // 註冊查詢表單 key 供教學導引遮罩
     var testMode = dotenv.env['DEBUG_MODE'] == 'true'; // 獲取測試模式的環境變數
     return Scaffold(
+      key: _actionFormKey,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Scrollbar(

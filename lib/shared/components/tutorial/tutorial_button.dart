@@ -367,9 +367,13 @@ class _SpotlightPainter extends CustomPainter {
       Paint()..color = Colors.black.withValues(alpha: 0.7),
     );
 
-    // 挖洞
+    // 挖洞（加大範圍與 radius）
     if (targetRect != null) {
-      final rrect = RRect.fromRectAndRadius(targetRect!, Radius.circular(12));
+      final padding = 16.0;
+      final rrect = RRect.fromRectAndRadius(
+        targetRect!.inflate(padding),
+        Radius.circular(12),
+      );
       canvas.drawRRect(rrect, paint);
     }
 

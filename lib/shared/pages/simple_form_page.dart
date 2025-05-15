@@ -16,11 +16,13 @@ abstract class SimpleFormPage<T extends ConsumerStatefulWidget>
   final String title;
   final double fieldSpacing;
   final ViewMode viewMode; // 新增檢視模式屬性
+  final dynamic id; // 新增 id 屬性
 
   const SimpleFormPage({
     required this.title,
     this.fieldSpacing = 20.0,
     this.viewMode = ViewMode.view, // 預設為檢視模式
+    required this.id,
     super.key,
   });
 }
@@ -33,6 +35,7 @@ abstract class SimpleFormPageState<T extends SimpleFormPage>
   late bool isEditMode = false; // 新增編輯模式屬性
   late bool isCreateMode = false; // 新增創建模式屬性
   late bool hasEditPermission = false; // 預設為有編輯權限
+  dynamic get id => widget.id; // 提供 id getter
   @override
   void initState() {
     super.initState();
@@ -66,9 +69,9 @@ abstract class SimpleFormPageState<T extends SimpleFormPage>
 
   List<FieldConfig> getFields();
 
-  Future<void> onSave(Map<String, dynamic> formData);
+  Future<void> onSave(dynamic id, Map<String, dynamic> formData);
 
-  Future<void> onDelete(Map<String, dynamic> formData);
+  Future<void> onDelete(dynamic id, Map<String, dynamic> formData);
 
   /// 提供權限的函數，返回bool值，表示是否有權限打開編輯頁面
   Future<bool> hasPermissionToEdit() async {
@@ -80,32 +83,39 @@ abstract class SimpleFormPageState<T extends SimpleFormPage>
     BuildContext context,
     GlobalKey<FormBuilderState> formKey,
   ) {
+    final customColors = Theme.of(context).extension<CustomColors>();
     return hasEditPermission
         ? BottomAppBar(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: isViewMode
-                  ? [
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children:
+                isViewMode
+                    ? [
                       Flexible(
                         child: CustomButton(
                           label: 'Edit',
-                          style: CustomStyle(backgroundColor: Theme.of(context).colorScheme.warning),
+                          style: CustomStyle(
+                            backgroundColor:
+                                customColors?.warning ?? AppColor.warning,
+                          ),
                           onTap: () {
                             toggleViewMode(); // 切換為編輯模式
                           },
                         ),
                       ),
                     ]
-                  : [
+                    : [
                       if (isEditMode)
                         Flexible(
                           child: CustomButton(
                             label: 'Delete',
                             style: CustomStyle(
-                              backgroundColor: Theme.of(context).colorScheme.error,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.error,
                             ),
                             onTap: () {
                               onDelete.call(
+                                widget.id,
                                 formKey.currentState?.value ?? {},
                               ); // 提交刪除請求
                               Navigator.pop(context);
@@ -115,10 +125,15 @@ abstract class SimpleFormPageState<T extends SimpleFormPage>
                       Flexible(
                         child: CustomButton(
                           label: 'Submit',
-                          style: CustomStyle(backgroundColor: Theme.of(context).colorScheme.success),
+                          style: CustomStyle(
+                            backgroundColor:
+                                customColors?.success ?? AppColor.success,
+                          ),
                           onTap: () {
-                            if (formKey.currentState?.saveAndValidate() ?? false) {
+                            if (formKey.currentState?.saveAndValidate() ??
+                                false) {
                               onSave.call(
+                                widget.id,
                                 formKey.currentState?.value ?? {},
                               ); // 提交當前表單數據
                             }
@@ -126,8 +141,8 @@ abstract class SimpleFormPageState<T extends SimpleFormPage>
                         ),
                       ),
                     ],
-            ),
-          )
+          ),
+        )
         : null; // 如果沒有編輯權限，則不顯示底部按鈕
   }
 
@@ -135,28 +150,43 @@ abstract class SimpleFormPageState<T extends SimpleFormPage>
   Widget build(BuildContext context) {
     final GlobalKey<FormBuilderState> formKey = GlobalKey<FormBuilderState>();
 
+    // initialValue 合併 id 與來源資料（如有）
+    Map<String, dynamic> initialValue = {};
+    try {
+      final todo = (widget as dynamic).todo;
+      if (todo != null) {
+        initialValue = Map<String, dynamic>.from(todo);
+      }
+    } catch (_) {}
+    if (widget.id != null) {
+      initialValue['id'] = widget.id;
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text(pageTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: DevFormBuilder(
-          testMode: dotenv.env['DEBUG_MODE'] == 'true',
-          key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ...getFields()
-                  .map(
-                    (field) => Padding(
-                      padding: EdgeInsets.only(
-                        bottom: (widget as SimpleFormPage).fieldSpacing,
+        child: SingleChildScrollView(
+          child: DevFormBuilder(
+            testMode: dotenv.env['DEBUG_MODE'] == 'true',
+            key: formKey,
+            initialValue: initialValue,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...getFields()
+                    .map(
+                      (field) => Padding(
+                        padding: EdgeInsets.only(
+                          bottom: (widget as SimpleFormPage).fieldSpacing,
+                        ),
+                        child: field.getFormBuilderField(context, formKey),
                       ),
-                      child: field.getFormBuilderField(context, formKey),
-                    ),
-                  )
-                  .toList(),
-              const SizedBox(height: 20),
-            ],
+                    )
+                    .toList(),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),

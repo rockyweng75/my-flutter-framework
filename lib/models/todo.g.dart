@@ -9,19 +9,25 @@ part of 'todo.dart';
 Todo _$TodoFromJson(Map<String, dynamic> json) => Todo(
       id: (json['id'] as num).toInt(),
       title: json['title'] as String,
-      description: json['description'] as String,
-      dueDate: json['dueDate'] as String,
-      priority: json['priority'] as String,
-      assignee: json['assignee'] as String,
-      completed: json['completed'] as bool,
+      startTime: DateTime.parse(json['startTime'] as String),
+      endTime: DateTime.parse(json['endTime'] as String),
+      status: json['status'] as String,
+      content: json['content'] as String?,
+      location: json['location'] as String?,
+      attachments: (json['attachments'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      assignee: json['assignee'] as String?,
     );
 
 Map<String, dynamic> _$TodoToJson(Todo instance) => <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
-      'description': instance.description,
-      'dueDate': instance.dueDate,
-      'priority': instance.priority,
+      'startTime': instance.startTime.toIso8601String(),
+      'endTime': instance.endTime.toIso8601String(),
+      'status': instance.status,
+      'content': instance.content,
+      'location': instance.location,
+      'attachments': instance.attachments,
       'assignee': instance.assignee,
-      'completed': instance.completed,
     };

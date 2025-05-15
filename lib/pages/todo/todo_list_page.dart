@@ -3,7 +3,7 @@ import 'package:my_flutter_framework/pages/todo/todo_query_form_page.dart';
 import 'package:my_flutter_framework/shared/pages/simple_list_page.dart';
 import 'package:my_flutter_framework/shared/pages/simple_query_form_page.dart';
 class TodoListPage extends SimpleListPage {
-  const TodoListPage({
+  TodoListPage({
     super.key,
     required super.items,
     required super.scrollController,

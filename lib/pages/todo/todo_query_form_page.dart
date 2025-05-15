@@ -4,13 +4,12 @@ import 'package:my_flutter_framework/shared/order_config.dart';
 import 'package:my_flutter_framework/shared/pages/simple_query_form_page.dart';
 
 class TodoQueryFormPage extends SimpleQueryFormPage {
-  const TodoQueryFormPage({super.key, super.fieldSpacing = 20.0, super.onFormSubmit});
+  TodoQueryFormPage({super.key, super.fieldSpacing = 20.0, super.onFormSubmit});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
     return _TodoQueryFormPageState();
   }
-
 }
 
 class _TodoQueryFormPageState extends SimpleQueryFormPageState<TodoQueryFormPage> {
