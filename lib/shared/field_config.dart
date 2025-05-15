@@ -46,7 +46,6 @@ class FieldConfig {
 
   // 根據輸入框類型返回對應的組件
   Widget getFormBuilderField(context, formKey) {
-
     switch (type) {
       case FieldType.text:
         return FormBuilderTextField(
@@ -203,6 +202,7 @@ class FieldConfig {
                 children: [
                   FileUpload(
                     label: label,
+                    enabled: enabled,
                     onFileSelected: (file) {
                       // 將檔案路徑存入表單欄位
                       field.didChange(file.path);
@@ -235,6 +235,7 @@ class FieldConfig {
                 children: [
                   ImageUpload(
                     label: label,
+                    enabled: enabled,
                     onImageSelected: (file) {
                       field.didChange(file.path);
                     },

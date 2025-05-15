@@ -14,6 +14,7 @@ class ImageUpload extends StatefulWidget {
   final bool allowMultiple;
   final Color? backgroundColor;
   final bool isDebug;
+  final bool enabled;
 
   const ImageUpload({
     super.key,
@@ -23,6 +24,7 @@ class ImageUpload extends StatefulWidget {
     this.allowMultiple = false,
     this.backgroundColor,
     this.isDebug = false,
+    this.enabled = true,
   });
 
   @override
@@ -432,6 +434,7 @@ class _ImageUploadState extends State<ImageUpload> {
   @override
   Widget build(BuildContext context) {
     final hasFile = _fileName != null && _fileName!.isNotEmpty;
+    final isEnabled = widget.enabled;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -466,44 +469,44 @@ class _ImageUploadState extends State<ImageUpload> {
             },
           ),
         MouseRegion(
-          cursor: SystemMouseCursors.click,
-          onEnter: (_) => setState(() => _isHovered = true),
-          onExit: (_) => setState(() => _isHovered = false),
-          child: _buildButton(context, hasFile: hasFile),
+          cursor: isEnabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
+          onEnter: (_) => isEnabled ? setState(() => _isHovered = true) : null,
+          onExit: (_) => isEnabled ? setState(() => _isHovered = false) : null,
+          child: _buildButton(context, hasFile: hasFile, isEnabled: isEnabled),
         ),
       ],
     );
   }
 
-  Widget _buildButton(BuildContext context, {required bool hasFile}) {
+  Widget _buildButton(BuildContext context, {required bool hasFile, required bool isEnabled}) {
     if (!hasFile) {
       return GestureDetector(
-        onTap: _showSourcePicker,
+        onTap: isEnabled ? _showSourcePicker : null,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           width: double.infinity,
           height: 56,
           padding: const EdgeInsets.symmetric(horizontal: 0),
           decoration: BoxDecoration(
-            color: widget.backgroundColor,
+            color: isEnabled ? widget.backgroundColor : Colors.grey[200],
             border: Border.all(
-              color:
-                  _isHovered
+              color: isEnabled
+                  ? (_isHovered
                       ? Theme.of(context).colorScheme.primary.withOpacity(0.7)
-                      : Theme.of(context).dividerColor,
+                      : Theme.of(context).dividerColor)
+                  : Colors.grey[400]!,
               width: 2,
             ),
             borderRadius: BorderRadius.circular(8),
-            boxShadow:
-                _isHovered
-                    ? [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ]
-                    : [],
+            boxShadow: isEnabled && _isHovered
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ]
+                : [],
           ),
           alignment: Alignment.center,
           child: Row(
@@ -514,10 +517,7 @@ class _ImageUploadState extends State<ImageUpload> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Icon(
                   Icons.image,
-                  color:
-                      _isHovered
-                          ? Theme.of(context).colorScheme.primary
-                          : Colors.grey[700],
+                  color: isEnabled && _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[700],
                 ),
               ),
               const SizedBox(width: 10),
@@ -526,10 +526,7 @@ class _ImageUploadState extends State<ImageUpload> {
                 child: Text(
                   widget.label ?? '選擇圖片',
                   style: TextStyle(
-                    color:
-                        _isHovered
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey[800],
+                    color: isEnabled && _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[800],
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -556,25 +553,25 @@ class _ImageUploadState extends State<ImageUpload> {
       height: 56,
       padding: const EdgeInsets.symmetric(horizontal: 0),
       decoration: BoxDecoration(
-        color: widget.backgroundColor,
+        color: isEnabled ? widget.backgroundColor : Colors.grey[200],
         border: Border.all(
-          color:
-              _isHovered
+          color: isEnabled
+              ? (_isHovered
                   ? Theme.of(context).colorScheme.primary.withOpacity(0.7)
-                  : Theme.of(context).dividerColor,
+                  : Theme.of(context).dividerColor)
+              : Colors.grey[400]!,
           width: 2,
         ),
         borderRadius: BorderRadius.circular(8),
-        boxShadow:
-            _isHovered
-                ? [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ]
-                : [],
+        boxShadow: isEnabled && _isHovered
+            ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ]
+            : [],
       ),
       alignment: Alignment.center,
       child: Row(
@@ -599,10 +596,7 @@ class _ImageUploadState extends State<ImageUpload> {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Icon(
                 Icons.image,
-                color:
-                    _isHovered
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.grey[700],
+                color: isEnabled && _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[700],
               ),
             ),
           const SizedBox(width: 10),
@@ -616,10 +610,7 @@ class _ImageUploadState extends State<ImageUpload> {
                       ? _fileName!.substring(0, 29) + '...'
                       : _fileName ?? '',
                   style: TextStyle(
-                    color:
-                        _isHovered
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey[800],
+                    color: isEnabled && _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[800],
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     overflow: TextOverflow.ellipsis,
@@ -639,15 +630,17 @@ class _ImageUploadState extends State<ImageUpload> {
                 size: 22,
               ),
               tooltip: '移除圖片',
-              onPressed: () {
-                setState(() {
-                  _fileName = null;
-                  _imageFile = null;
-                });
-                if (widget.onImageSelected != null) {
-                  widget.onImageSelected!(XFile(''));
-                }
-              },
+              onPressed: isEnabled
+                  ? () {
+                      setState(() {
+                        _fileName = null;
+                        _imageFile = null;
+                      });
+                      if (widget.onImageSelected != null) {
+                        widget.onImageSelected!(XFile(''));
+                      }
+                    }
+                  : null,
             ),
           ),
         ],

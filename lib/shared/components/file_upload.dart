@@ -7,6 +7,7 @@ class FileUpload extends StatefulWidget {
   final String? accept;
   final bool allowMultiple;
   final Color? backgroundColor;
+  final bool enabled;
 
   const FileUpload({
     super.key,
@@ -15,6 +16,7 @@ class FileUpload extends StatefulWidget {
     this.accept,
     this.allowMultiple = false,
     this.backgroundColor,
+    this.enabled = true,
   });
 
   @override
@@ -63,12 +65,13 @@ class _FileUploadState extends State<FileUpload> {
   @override
   Widget build(BuildContext context) {
     final hasFile = _fileName != null && _fileName!.isNotEmpty;
+    final isEnabled = widget.enabled;
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
+      cursor: isEnabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      onEnter: (_) => isEnabled ? setState(() => _isHovered = true) : null,
+      onExit: (_) => isEnabled ? setState(() => _isHovered = false) : null,
       child: GestureDetector(
-        onTap: _isLoading ? null : _pickFile,
+        onTap: isEnabled && !_isLoading ? _pickFile : null,
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
@@ -77,15 +80,17 @@ class _FileUploadState extends State<FileUpload> {
           height: 56,
           padding: const EdgeInsets.symmetric(horizontal: 0),
           decoration: BoxDecoration(
-            color: widget.backgroundColor,
+            color: isEnabled ? widget.backgroundColor : Colors.grey[200],
             border: Border.all(
-              color: _isHovered
-                  ? Theme.of(context).colorScheme.primary.withOpacity(0.7)
-                  : Theme.of(context).dividerColor,
+              color: isEnabled
+                  ? (_isHovered
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.7)
+                      : Theme.of(context).dividerColor)
+                  : Colors.grey[400]!,
               width: 2,
             ),
             borderRadius: BorderRadius.circular(8),
-            boxShadow: _isHovered
+            boxShadow: isEnabled && _isHovered
                 ? [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.08),
@@ -103,7 +108,7 @@ class _FileUploadState extends State<FileUpload> {
                   children: [
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Icon(Icons.attach_file, color: _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[700]),
+                      child: Icon(Icons.attach_file, color: isEnabled && _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[700]),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -116,7 +121,7 @@ class _FileUploadState extends State<FileUpload> {
                                 ? _fileName!.substring(0, 29) + '...'
                                 : _fileName ?? '',
                             style: TextStyle(
-                              color: _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[800],
+                              color: isEnabled && _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[800],
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               overflow: TextOverflow.ellipsis,
@@ -132,14 +137,16 @@ class _FileUploadState extends State<FileUpload> {
                       child: IconButton(
                         icon: const Icon(Icons.delete_outline, color: Colors.red, size: 22),
                         tooltip: '移除附件',
-                        onPressed: () {
-                          setState(() {
-                            _fileName = null;
-                          });
-                          if (widget.onFileSelected != null) {
-                            widget.onFileSelected!(XFile(''));
-                          }
-                        },
+                        onPressed: isEnabled
+                            ? () {
+                                setState(() {
+                                  _fileName = null;
+                                });
+                                if (widget.onFileSelected != null) {
+                                  widget.onFileSelected!(XFile(''));
+                                }
+                              }
+                            : null,
                       ),
                     ),
                   ],
@@ -150,7 +157,7 @@ class _FileUploadState extends State<FileUpload> {
                   children: [
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Icon(Icons.upload_file, color: _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[700]),
+                      child: Icon(Icons.upload_file, color: isEnabled && _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[700]),
                     ),
                     const SizedBox(width: 10),
                     Padding(
@@ -158,7 +165,7 @@ class _FileUploadState extends State<FileUpload> {
                       child: Text(
                         widget.label ?? '選擇檔案',
                         style: TextStyle(
-                          color: _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[800],
+                          color: isEnabled && _isHovered ? Theme.of(context).colorScheme.primary : Colors.grey[800],
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
