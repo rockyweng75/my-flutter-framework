@@ -56,12 +56,15 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
         value: widget.todo['title'],
         validator: FormBuilderValidators.required(),
         enabled: !isViewMode,
+        required: true,
       ),
       FieldConfig(
         name: 'content',
         label: 'Content',
         value: widget.todo['content'],
         enabled: !isViewMode,
+        config: {'maxLines': 5, 'minLines': 3},
+        required: true,
       ),
       FieldConfig(
         name: 'startTime',
@@ -70,6 +73,7 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
         type: FieldType.datePicker,
         validator: FormBuilderValidators.required(),
         enabled: !isViewMode,
+        required: true,
       ),
       FieldConfig(
         name: 'endTime',
@@ -78,6 +82,7 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
         type: FieldType.datePicker,
         validator: FormBuilderValidators.required(),
         enabled: !isViewMode,
+        required: true,
       ),
       FieldConfig(
         name: 'status',
@@ -145,22 +150,19 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
       });
       await TodoRepository.upsertTodo(updatedTodo);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('儲存成功')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('儲存成功')));
         // 確保回傳 Map<String, dynamic> 結構
         Navigator.pop(context, updatedTodo.toJson());
       }
     } else if (isCreateMode) {
-      final newTodo = Todo.fromJson({
-        'id': id,
-        ...safeFormData,
-      });
+      final newTodo = Todo.fromJson({'id': id, ...safeFormData});
       final created = await TodoRepository.addTodo(newTodo);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('新增成功')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('新增成功')));
         // 確保回傳 Map<String, dynamic> 結構
         Navigator.pop(context, created.toJson());
       }

@@ -76,7 +76,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Image.asset(
-                        'assets/logo.jpeg',
+                        'assets/logo.png',
                         height: 100,
                       ),
                       const SizedBox(height: 16),
