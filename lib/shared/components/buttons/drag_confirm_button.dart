@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter_framework/styles/theme_data.dart';
+import 'package:my_flutter_framework/styles/app_color.dart';
 
 class DragConfirmButton extends StatefulWidget {
   final String label;
@@ -61,7 +61,7 @@ class DragConfirmButtonState extends State<DragConfirmButton> {
   Widget _buildConfirmIcon() {
     return widget.confirmIcon ?? Icon(
       Icons.check_circle,
-      color: Theme.of(context).colorScheme.success,
+      color: AppColor.success,
       size: 40, // Match the height of the row
     );
   }
