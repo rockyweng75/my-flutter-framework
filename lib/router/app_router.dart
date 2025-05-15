@@ -4,6 +4,7 @@ import 'package:my_flutter_framework/pages/buttons/drag_confirm_button_demo_page
 import 'package:my_flutter_framework/pages/home/dashboard_page.dart';
 import 'package:my_flutter_framework/pages/login/login_page.dart';
 import 'package:my_flutter_framework/pages/message/message_box_page.dart';
+import 'package:my_flutter_framework/pages/ping/ping_test_page.dart';
 import 'package:my_flutter_framework/pages/swipe_page_demo.dart';
 import 'package:my_flutter_framework/pages/todo/todo_page.dart';
 import 'package:my_flutter_framework/shared/pages/internal_error_page.dart';
@@ -31,6 +32,7 @@ class AppRouter {
     '/swipe_page_demo': (context, state) => const SwipePageDemo(),
     '/image_upload_demo': (context, state) => const ImageUploadDemoPage(),
     '/image_compress_demo': (context, state) => const ImageCompressDemoPage(),
+    '/ping_tool': (context, state) => const PingTestPage(),
     '/500':
         (context, state) => const InternalErrorPage(redirectPath: indexRoute),
   };
@@ -83,13 +85,11 @@ class AppRouter {
     '/swipe_page_demo': 'Swipe Page Demo',
     '/image_upload_demo': 'Image Upload Demo',
     '/image_compress_demo': 'Image Compress Demo',
+    '/ping_tool': 'Ping Tool',
   };
 
   static final List<String> hiddenMenus = ['/login'];
 
   /// 白名單
-  static final List<String> whiteList = [
-    '/login',
-    '/500',
-  ];
+  static final List<String> whiteList = ['/login', '/500'];
 }
