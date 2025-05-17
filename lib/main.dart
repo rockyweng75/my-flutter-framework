@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_flutter_framework/styles/theme_data.dart';
 
 class CustomScrollBehavior extends ScrollBehavior {
-  @override
+  // @override
   Widget buildViewportChrome(
     BuildContext context,
     Widget child,

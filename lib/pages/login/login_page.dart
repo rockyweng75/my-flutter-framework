@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:my_flutter_framework/api/login/i_login_service.dart';
 import 'package:my_flutter_framework/database/user_repository.dart';
 import 'package:my_flutter_framework/models/user.dart';
-import 'package:my_flutter_framework/pages/home/dashboard_page.dart';
 import 'package:my_flutter_framework/pages/login/login_bottom_app_bar.dart';
 import 'package:my_flutter_framework/pages/register/register_page.dart';
 import 'package:my_flutter_framework/shared/biometric_auth.dart';
@@ -107,7 +106,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Widget _buildLoginBody(BoxConstraints constraints) {
     return Container(
-      color: Colors.blueGrey[50], // Set background color
+      color: Theme.of(context).colorScheme.surface,
       height: constraints.maxHeight,
       width: constraints.maxWidth,
       constraints: const BoxConstraints(minWidth: 320, minHeight: 480),
@@ -163,7 +162,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget _buildLoginForm() {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 1.0),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 1.0),
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Padding(

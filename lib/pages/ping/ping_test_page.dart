@@ -97,6 +97,13 @@ class _PingTestPageState extends MainLayoutPage<PingTestPage> {
     });
     final ip = _ipController.text.trim();
     final count = int.tryParse(_countController.text.trim()) ?? 5;
+    if (count < 5 || count > 100) {
+      setState(() {
+        _isLoading = false;
+        _error = '次數必須介於 5 ~ 100';
+      });
+      return;
+    }
     try {
       List<PingResult> results = [];
       for (int i = 0; i < count; i++) {
@@ -238,6 +245,7 @@ class _PingTestPageState extends MainLayoutPage<PingTestPage> {
               ),
               const SizedBox(width: 12),
               ElevatedButton(
+                key: const Key('ping_start_button'),
                 onPressed: _isLoading ? null : _runPing,
                 child: _isLoading ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('開始'),
               ),
