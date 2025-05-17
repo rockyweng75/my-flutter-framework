@@ -12,6 +12,7 @@ import 'package:my_flutter_framework/shared/pages/not_found_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:my_flutter_framework/pages/image_upload_demo_page.dart';
 import 'package:my_flutter_framework/pages/image_compress_demo_page.dart';
+import 'package:my_flutter_framework/pages/ping/ping_devices_page.dart';
 
 typedef RouteBuilder =
     Widget Function(BuildContext context, GoRouterState state);
@@ -33,6 +34,7 @@ class AppRouter {
     '/image_upload_demo': (context, state) => const ImageUploadDemoPage(),
     '/image_compress_demo': (context, state) => const ImageCompressDemoPage(),
     '/ping_tool': (context, state) => const PingTestPage(),
+    '/ping_devices': (context, state) => const PingDevicesPage(),
     '/500':
         (context, state) => const InternalErrorPage(redirectPath: indexRoute),
   };
@@ -86,6 +88,7 @@ class AppRouter {
     '/image_upload_demo': 'Image Upload Demo',
     '/image_compress_demo': 'Image Compress Demo',
     '/ping_tool': 'Ping Tool',
+    '/ping_devices': 'Ping Devices',
   };
 
   static final List<String> hiddenMenus = ['/login'];
