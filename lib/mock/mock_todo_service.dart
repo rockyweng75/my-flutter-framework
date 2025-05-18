@@ -8,17 +8,18 @@ class MockTodoService implements ITodoService {
 
   MockTodoService(this._httpClient);
 
-  final List<Map<String, dynamic>> _mockDatabase = [
-    {'id': 1, 'title': 'Mock Todo 1', 'description': 'Description 1', 'dueDate': '2025-05-01', 'priority': 'low', 'assignee': '1', 'completed': false},
-    {'id': 2, 'title': 'Mock Todo 2', 'description': 'Description 2', 'dueDate': '2025-05-02', 'priority': 'medium', 'assignee': '2', 'completed': true},
-    {'id': 3, 'title': 'Mock Todo 3', 'description': 'Description 3', 'dueDate': '2025-05-03', 'priority': 'high', 'assignee': '3', 'completed': false},
-    {'id': 4, 'title': 'Mock Todo 4', 'description': 'Description 4', 'dueDate': '2025-05-04', 'priority': 'low', 'assignee': '1', 'completed': true},
-    {'id': 5, 'title': 'Mock Todo 5', 'description': 'Description 5', 'dueDate': '2025-05-05', 'priority': 'medium', 'assignee': '2', 'completed': false},
-    {'id': 6, 'title': 'Mock Todo 6', 'description': 'Description 6', 'dueDate': '2025-05-06', 'priority': 'high', 'assignee': '3', 'completed': true},
-    {'id': 7, 'title': 'Mock Todo 7', 'description': 'Description 7', 'dueDate': '2025-05-07', 'priority': 'low', 'assignee': '1', 'completed': false},
-    {'id': 8, 'title': 'Mock Todo 8', 'description': 'Description 8', 'dueDate': '2025-05-08', 'priority': 'medium', 'assignee': '2', 'completed': true},
-    {'id': 9, 'title': 'Mock Todo 9', 'description': 'Description 9', 'dueDate': '2025-05-09', 'priority': 'high', 'assignee': '3', 'completed': false},
-    {'id': 10, 'title': 'Mock Todo 10', 'description': 'Description 10', 'dueDate': '2025-05-10', 'priority': 'low', 'assignee': '1', 'completed': true},
+  final DateTime _today = DateTime.now();
+  late final List<Map<String, dynamic>> _mockDatabase = [
+    for (int i = 0; i < 10; i++)
+      {
+        'id': i + 1,
+        'title': 'Mock Todo $i',
+        'description': 'Description $i',
+        'dueDate': _today.add(Duration(days: i ~/ 2)).toIso8601String().substring(0, 10),
+        'priority': ['low', 'medium', 'high'][i % 3],
+        'assignee': ((i % 3) + 1).toString(),
+        'completed': i % 2 == 1,
+      },
   ];
 
   @override

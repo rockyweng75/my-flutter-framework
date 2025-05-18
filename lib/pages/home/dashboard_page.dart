@@ -6,6 +6,7 @@ import 'package:my_flutter_framework/api/todos/itodo_service.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:my_flutter_framework/shared/utils/transaction_manager.dart';
+import 'package:my_flutter_framework/shared/pages/swipe_card_list.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -18,12 +19,12 @@ class _DashboardPageState extends MainLayoutPage<DashboardPage> {
   late final ITodoService _todoService;
   int _completedTodos = 0;
   int _incompleteTodos = 0;
+  List<Map<String, dynamic>> _todayTodoList = [];
 
   @override
   void initState() {
     super.initState();
     _todoService = ref.read(todoServiceProvider);
-    
   }
 
   @override
@@ -36,17 +37,28 @@ class _DashboardPageState extends MainLayoutPage<DashboardPage> {
 
   Future<void> _fetchTodoCounts() async {
     TransactionManager transactionManager = TransactionManager(context);
-    final todos = await transactionManager.execute<PaginatedResponse<Map<String, dynamic>>>(() async {
-      return await _todoService.getTodos(page: 1, pageSize: 100);
-    });
+    final todos = await transactionManager
+        .execute<PaginatedResponse<Map<String, dynamic>>>(() async {
+          return await _todoService.getTodos(page: 1, pageSize: 100);
+        });
     if (!mounted) return; // 確保 widget 仍在 widget tree 中
     if (todos == null) return; // 確保 todos 不為 null
-    // final todos = await _todoService.getTodos(page: 1, pageSize: 100);
+    final today = DateTime.now();
     setState(() {
       _completedTodos =
           todos.data.where((todo) => todo['completed'] == true).length;
       _incompleteTodos =
           todos.data.where((todo) => todo['completed'] == false).length;
+      _todayTodoList =
+          todos.data.where((todo) {
+            final dueDate = todo['dueDate'];
+            if (dueDate == null) return false;
+            final due = DateTime.tryParse(dueDate);
+            if (due == null) return false;
+            return due.year == today.year &&
+                due.month == today.month &&
+                due.day == today.day;
+          }).toList();
     });
   }
 
@@ -300,6 +312,79 @@ class _DashboardPageState extends MainLayoutPage<DashboardPage> {
                             }).toList(),
                       );
                     },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    '今日待辦清單',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  SwipeCardList(
+                    items: _todayTodoList,
+                    onConfirm: (item) async {
+                      await _todoService.updateTodo(item['id'], {
+                        'completed': true,
+                      });
+                      await _fetchTodoCounts();
+                    },
+                    onCancel: (item) async {
+                      await _todoService.deleteTodo(item['id']);
+                      await _fetchTodoCounts();
+                    },
+                    emptyText: '今日無待辦事項',
+                    buildContent: (item) => Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                item['title'] ?? '無標題',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              if (item['description'] != null &&
+                                  item['description'].toString().isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0),
+                                  child: Text(
+                                    item['description'],
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          right: 12,
+                          bottom: 8,
+                          child: Text(
+                            item['dueDate'] != null
+                                ? '截止日期: ${item['dueDate']}'
+                                : '無截止日期',
+                            style: const TextStyle(fontSize: 13, color: Colors.grey),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

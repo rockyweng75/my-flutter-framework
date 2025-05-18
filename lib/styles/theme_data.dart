@@ -41,6 +41,17 @@ final ThemeData appTheme = ThemeData(
       borderSide: BorderSide(color: Colors.red, width: 2.0),
     ),
   ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: AppColor.primary,
+      foregroundColor: Colors.white,
+      textStyle: const TextStyle(fontWeight: FontWeight.bold),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+  ),
 ).copyWith(
   // 透過 extension 或 copyWith 增加自訂色彩
   extensions: <ThemeExtension<dynamic>>[
@@ -87,6 +98,17 @@ final ThemeData appDarkTheme = ThemeData(
     ),
     focusedErrorBorder: OutlineInputBorder(
       borderSide: BorderSide(color: Colors.redAccent, width: 2.0),
+    ),
+  ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: AppColor.primaryDark,
+      foregroundColor: Colors.white,
+      textStyle: const TextStyle(fontWeight: FontWeight.bold),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
     ),
   ),
 ).copyWith(
