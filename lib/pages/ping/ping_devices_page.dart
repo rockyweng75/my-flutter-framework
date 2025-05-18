@@ -33,7 +33,7 @@ class _PingDevicesPageState extends MainLayoutPage<PingDevicesPage> {
     _pingService = ref.read(pingServiceProvider);
   }
 
-  Future<void> _scanByWeb() async {
+  Future<void> _scan() async {
     setState(() {
       _isLoading = true;
       _error = null;
@@ -52,80 +52,13 @@ class _PingDevicesPageState extends MainLayoutPage<PingDevicesPage> {
     });
   }
 
-  Future<void> _scanByNative() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-      _results = [];
-    });
-    final subnet = _subnetController.text.trim();
-    await TransactionManager(context).execute(() async {
-      try {
-        if (Theme.of(context).platform == TargetPlatform.android ||
-            Theme.of(context).platform == TargetPlatform.iOS) {
-          // 並行掃描區網裝置
-          const batchSize = 20;
-          List<DevicePingResult> results = [];
-          List<Future<DevicePingResult>> batch = [];
-          Future<DevicePingResult> pingIp(String ip, int i) async {
-            bool online = false;
-            double ms = 0;
-            try {
-              final result = await Process.run('ping', ['-c', '1', ip]);
-              if (result.exitCode == 0) {
-                final output = result.stdout.toString();
-                final match = RegExp(r'time=([0-9.]+) ms').firstMatch(output);
-                if (match != null) {
-                  ms = double.tryParse(match.group(1)!) ?? 0;
-                  online = true;
-                }
-              }
-            } catch (_) {
-              online = false;
-              ms = 0;
-            }
-            return DevicePingResult(
-              ip: ip,
-              name: 'Device-$i',
-              ms: ms,
-              online: online,
-            );
-          }
-          for (int i = 1; i <= 254; i++) {
-            final ip = '$subnet$i';
-            batch.add(pingIp(ip, i));
-            if (batch.length == batchSize || i == 254) {
-              final batchResults = await Future.wait(batch);
-              results.addAll(batchResults);
-              batch.clear();
-            }
-          }
-          _results = results;
-        } else {
-          _results = await _pingService.scanSubnet(subnet);
-          if (_results.isEmpty) {
-            _error = '掃描結果為空，請檢查網路或後端 API';
-          }
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      } catch (e) {
-        _error = e.toString();
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    });
-  }
-
   Future<void> _scanDevices() async {
-    if (kIsWeb) {
-      await _scanByWeb();
-    } else {
-      await _scanByNative();
-    }
+    // if (kIsWeb) {
+    //   await _scanByWeb();
+    // } else {
+    //   await _scanByNative();
+    // }
+    await _scan();
   }
 
   Widget _buildByWeb() {
@@ -153,7 +86,8 @@ class _PingDevicesPageState extends MainLayoutPage<PingDevicesPage> {
   }
 
   Widget _buildByNative() {
-    final isSupported = Theme.of(context).platform == TargetPlatform.android ||
+    final isSupported =
+        Theme.of(context).platform == TargetPlatform.android ||
         Theme.of(context).platform == TargetPlatform.iOS ||
         Theme.of(context).platform == TargetPlatform.windows ||
         Theme.of(context).platform == TargetPlatform.linux ||

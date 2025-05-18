@@ -30,63 +30,9 @@ class _PingTestPageState extends MainLayoutPage<PingTestPage> {
     // 這裡請根據實際後端 API baseUrl 設定
     _pingService = ref.read(pingServiceProvider);
   }
-
-  Future<PingResult> _pingWeb(String ip) async {
-    // Web: 呼叫後端 API 進行 ping
-    return await _pingService.ping(ip);
-  }
-
-  Future<bool> _isEmulator() async {
-    final deviceInfo = DeviceInfoPlugin();
-    if (Platform.isAndroid) {
-      final androidInfo = await deviceInfo.androidInfo;
-      return !androidInfo.isPhysicalDevice;
-    } else if (Platform.isIOS) {
-      final iosInfo = await deviceInfo.iosInfo;
-      return !iosInfo.isPhysicalDevice;
-    }
-    return false;
-  }
-
-  Future<PingResult> _pingNative(String ip) async {
-    if (await _isEmulator()) {
-      return await _pingService.ping(ip);
-    }
-    try {
-      final result = await Process.run(
-        Platform.isWindows ? 'ping' : 'ping',
-        Platform.isWindows
-            ? ['-n', '1', ip]
-            : ['-c', '1', ip],
-      );
-      if (result.exitCode == 0) {
-        final output = result.stdout.toString();
-        double? ms;
-        if (Platform.isWindows) {
-          // Windows: time=XXms
-          final match = RegExp(r'time[=<]([0-9]+)ms').firstMatch(output);
-          if (match != null) {
-            ms = double.tryParse(match.group(1)!);
-          }
-        } else {
-          // Unix: time=XX.X ms
-          final match = RegExp(r'time=([0-9.]+) ms').firstMatch(output);
-          if (match != null) {
-            ms = double.tryParse(match.group(1)!);
-          }
-        }
-        if (ms != null) {
-          return PingResult(ip: ip, ms: ms, success: true);
-        } else {
-          // fallback: 解析不到回應時間
-          return await _pingService.ping(ip);
-        }
-      } else {
-        return await _pingService.ping(ip);
-      }
-    } catch (_) {
-      return await _pingService.ping(ip);
-    }
+  
+  Future<PingResult> _ping(String ip) async {
+    return _pingService.ping(ip);
   }
 
   Future<void> _runPing() async {
@@ -108,11 +54,13 @@ class _PingTestPageState extends MainLayoutPage<PingTestPage> {
       List<PingResult> results = [];
       for (int i = 0; i < count; i++) {
         PingResult elapsed;
-        if (kIsWeb) {
-          elapsed = await _pingWeb(ip);
-        } else {
-          elapsed = await _pingNative(ip);
-        }
+        // if (kIsWeb) {
+        //   elapsed = await _pingWeb(ip);
+        // } else {
+        //   elapsed = await _pingNative(ip);
+        // }
+        elapsed = await _ping(ip);
+
         results.add(elapsed);
         await Future.delayed(const Duration(milliseconds: 300));
       }
