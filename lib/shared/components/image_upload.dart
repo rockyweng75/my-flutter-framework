@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:camera/camera.dart';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:my_flutter_framework/shared/components/message_box.dart';
 import 'package:my_flutter_framework/shared/utils/print_type.dart';
 import 'package:my_flutter_framework/shared/utils/image_compress_util.dart';
+import 'package:my_flutter_framework/shared/components/image_preview.dart';
 
 class ImageUpload extends StatefulWidget {
   final void Function(XFile file)? onImageSelected;
@@ -435,39 +437,11 @@ class _ImageUploadState extends State<ImageUpload> {
   Widget build(BuildContext context) {
     final hasFile = _fileName != null && _fileName!.isNotEmpty;
     final isEnabled = widget.enabled;
+    final imagePreview = hasFile ? ImagePreview(fileName: _fileName!) : null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // DEBUG 區塊
-        if (widget.isDebug)
-          FutureBuilder<int>(
-            future: _imageFile?.length(),
-            builder: (context, snapshot) {
-              final sizeStr =
-                  (snapshot.hasData && _imageFile != null)
-                      ? '${(snapshot.data! / 1024).toStringAsFixed(1)} KB'
-                      : '-';
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 100),
-                  child: Container(
-                    color: Colors.grey[200],
-                    padding: const EdgeInsets.all(8),
-                    child: SingleChildScrollView(
-                      child: Text(
-                        '[DEBUG]\n_fileName: \\${_fileName ?? ''}\n_imageFile: \\${_imageFile?.path ?? ''}\n檔案大小: $sizeStr\n_isLoading: \\$_isLoading\n_isHovered: \\$_isHovered\n_isCameraReady: \\$_isCameraReady',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+        if (imagePreview != null) imagePreview,
         MouseRegion(
           cursor: isEnabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
           onEnter: (_) => isEnabled ? setState(() => _isHovered = true) : null,

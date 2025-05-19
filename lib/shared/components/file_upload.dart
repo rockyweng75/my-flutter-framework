@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:my_flutter_framework/styles/app_color.dart';
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:my_flutter_framework/adapters/fileSystem/web_file_system_adapter.dart';
+import 'package:my_flutter_framework/shared/components/image_preview.dart';
 
 class FileUpload extends StatefulWidget {
   final void Function(XFile file)? onFileSelected;
@@ -78,82 +75,12 @@ class _FileUploadState extends State<FileUpload> {
     });
   }
 
-  // Web: 讀取 IndexedDB 圖片
-  Future<Uint8List?> _loadIndexedDbImage(String idbPath) async {
-    if (!kIsWeb) return null;
-    try {
-      // 動態 import，避免非 web 編譯錯誤
-      // ignore: avoid_web_libraries_in_flutter
-      // ignore: import_of_legacy_library_into_null_safe
-      // ignore: undefined_prefixed_name
-      final adapter = WebFileSystemAdapter();
-      return await adapter.readFile(idbPath);
-    } catch (e) {
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final hasFile = _fileName != null && _fileName!.isNotEmpty;
     final isEnabled = widget.enabled;
-    // 新增：debug log，協助追蹤 imagePreview 判斷
-    debugPrint('FileUpload: _fileName=$_fileName, hasFile=$hasFile');
-    Widget? imagePreview;
-    if (hasFile && (
-        _fileName!.endsWith('.png') ||
-        _fileName!.endsWith('.jpg') ||
-        _fileName!.endsWith('.jpeg') ||
-        _fileName!.endsWith('.gif') ||
-        _fileName!.startsWith('idb://')
-      )) {
-      debugPrint('FileUpload: 進入圖片預覽判斷, _fileName=$_fileName');
-      if (_fileName!.startsWith('http://') || _fileName!.startsWith('https://')) {
-        debugPrint('FileUpload: 網路圖片預覽');
-        imagePreview = Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: Image.network(
-            _fileName!,
-            height: 80,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 40, color: Colors.grey),
-          ),
-        );
-      } else if (_fileName!.startsWith('/') || _fileName!.startsWith('file://')) {
-        debugPrint('FileUpload: 本地圖片預覽');
-        imagePreview = Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: Image.file(
-            _fileName!.startsWith('file://') ? File(_fileName!.substring(7)) : File(_fileName!),
-            height: 80,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 40, color: Colors.grey),
-          ),
-        );
-      } else if (kIsWeb && _fileName!.startsWith('idb://')) {
-        debugPrint('FileUpload: idb 圖片預覽');
-        imagePreview = FutureBuilder<Uint8List?>(
-          future: _loadIndexedDbImage(_fileName!),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(height: 80, child: Center(child: CircularProgressIndicator(strokeWidth: 2)));
-            }
-            if (snapshot.hasData && snapshot.data != null) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Image.memory(
-                  snapshot.data!,
-                  height: 80,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 40, color: Colors.grey),
-                ),
-              );
-            }
-            return const Icon(Icons.broken_image, size: 40, color: Colors.grey);
-          },
-        );
-      }
-    }
+    final imagePreview = hasFile ? ImagePreview(fileName: _fileName!) : null;
+    debugPrint('FileUpload: _fileName=[38;5;2m$_fileName[0m, hasFile=$hasFile');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -168,7 +95,6 @@ class _FileUploadState extends State<FileUpload> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 180),
               width: double.infinity,
-              // 統一高度，避免內容不同導致高度變化
               height: 56,
               padding: const EdgeInsets.symmetric(horizontal: 0),
               decoration: BoxDecoration(
