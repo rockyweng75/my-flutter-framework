@@ -1,12 +1,21 @@
+import 'dart:async';
+import 'dart:js_interop';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:my_flutter_framework/api/assignee/iassignee_service.dart';
 import 'package:my_flutter_framework/models/assignee.dart';
+import 'package:my_flutter_framework/shared/components/reusable_notification.dart';
 import 'package:my_flutter_framework/shared/field_config.dart';
 import 'package:my_flutter_framework/shared/pages/simple_form_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_flutter_framework/database/todo_repository.dart';
 import 'package:my_flutter_framework/models/todo.dart';
+import 'package:my_flutter_framework/shared/utils/print_type.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:web/web.dart' as web; // 取代 dart:html
 
 class TodoDetailsPage extends SimpleFormPage {
   final Map<String, dynamic> todo;
@@ -142,6 +151,17 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
         safeFormData[key] = (safeFormData[key] as DateTime).toIso8601String();
       }
     }
+    // attachments 防呆：若為 String，轉成 List<String>
+    if (safeFormData['attachments'] != null) {
+      // 畫面跳出附件上傳尚未實作的警告
+      ReusableNotification(context).show(
+        '附件上傳功能尚未實作，暫時忽略上傳。',
+        type: PrintType.warning,
+        duration: const Duration(seconds: 1),
+      );
+      safeFormData['attachments'] = null;
+    }
+
     if (isEditMode) {
       final updatedTodo = Todo.fromJson({
         'id': id,
