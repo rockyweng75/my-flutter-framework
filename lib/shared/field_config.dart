@@ -251,6 +251,7 @@ class FieldConfig {
                   FileUpload(
                     label: required ? '$label *' : label, // fileUpload 若需紅星，於 label 結尾加 *
                     enabled: enabled,
+                    initialValue: value,
                     onFileSelected: (file) {
                       // 將檔案路徑存入表單欄位
                       field.didChange(file.path);

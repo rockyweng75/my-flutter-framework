@@ -1,21 +1,18 @@
 import 'dart:async';
-import 'dart:js_interop';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:my_flutter_framework/adapters/fileSystem/web_file_system_adapter_stub.dart';
 import 'package:my_flutter_framework/api/assignee/iassignee_service.dart';
 import 'package:my_flutter_framework/models/assignee.dart';
-import 'package:my_flutter_framework/shared/components/reusable_notification.dart';
 import 'package:my_flutter_framework/shared/field_config.dart';
 import 'package:my_flutter_framework/shared/pages/simple_form_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_flutter_framework/database/todo_repository.dart';
 import 'package:my_flutter_framework/models/todo.dart';
-import 'package:my_flutter_framework/shared/utils/print_type.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:web/web.dart' as web; // 取代 dart:html
+import 'package:my_flutter_framework/adapters/fileSystem/file_system_adapter.dart';
 
 class TodoDetailsPage extends SimpleFormPage {
   final Map<String, dynamic> todo;
@@ -33,11 +30,13 @@ class TodoDetailsPage extends SimpleFormPage {
 
 class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
   late final IAssigneeService _assigneeService;
+  late final FileSystemAdapter _fileSystemAdapter;
 
   @override
   void initState() {
     super.initState();
     _assigneeService = ref.read(assigneeServiceProvider);
+    _fileSystemAdapter = ref.read(fileSystemAdapterProvider);
   }
 
   @override
@@ -113,7 +112,9 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
       FieldConfig(
         name: 'attachments',
         label: 'Attachments',
-        value: widget.todo['attachments'],
+        value: widget.todo['attachments'] is List && (widget.todo['attachments'] as List).isNotEmpty
+            ? (widget.todo['attachments'] as List).first
+            : widget.todo['attachments'],
         type: FieldType.fileUpload,
         enabled: !isViewMode,
       ),
@@ -144,22 +145,44 @@ class _TodoDetailsPageState extends SimpleFormPageState<TodoDetailsPage> {
   @override
   Future<void> onSave(dynamic id, Map<String, dynamic> formData) async {
     if (isViewMode) return;
-    // 將 DateTime 轉為字串，避免 fromJson 型別錯誤
     Map<String, dynamic> safeFormData = Map.from(formData);
     for (var key in ['startTime', 'endTime']) {
       if (safeFormData[key] is DateTime) {
         safeFormData[key] = (safeFormData[key] as DateTime).toIso8601String();
       }
     }
-    // attachments 防呆：若為 String，轉成 List<String>
-    if (safeFormData['attachments'] != null) {
-      // 畫面跳出附件上傳尚未實作的警告
-      ReusableNotification(context).show(
-        '附件上傳功能尚未實作，暫時忽略上傳。',
-        type: PrintType.warning,
-        duration: const Duration(seconds: 1),
-      );
-      safeFormData['attachments'] = null;
+    // 將 attachments 轉換為 List<String>，確保每個元素都是 String
+    if (safeFormData['attachments'] is String) {
+      safeFormData['attachments'] = [safeFormData['attachments']];
+    }
+
+    // attachments 處理
+    if (safeFormData['attachments'] != null &&
+        safeFormData['attachments'] is List) {
+      List attachments = safeFormData['attachments'];
+      List<String> localPaths = [];
+      for (var file in attachments) {
+        if (file is String && file.startsWith('/')) {
+          // 已是本地路徑
+          localPaths.add(file);
+        } else if (file is XFile) {
+          // XFile 轉 local file
+          final bytes = await file.readAsBytes();
+          final savedPath = await _fileSystemAdapter.saveFile(file.name, bytes);
+          localPaths.add(savedPath);
+        } else if (file is File) {
+          // File 轉 local file（複製一份到 app local）
+          final bytes = await file.readAsBytes();
+          final fileName = file.uri.pathSegments.last;
+          final savedPath = await _fileSystemAdapter.saveFile(fileName, bytes);
+          localPaths.add(savedPath);
+        } else if (file is String && file.startsWith('blob:')) {
+          final savedPath = await _fileSystemAdapter.saveFile(file, Uint8List(0));
+          localPaths.add(savedPath);
+        }
+      }
+      // 保證 attachments 為 List<String>，且每個元素都是 String
+      safeFormData['attachments'] = List<String>.from(localPaths);
     }
 
     if (isEditMode) {

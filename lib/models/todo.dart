@@ -28,6 +28,18 @@ class Todo {
 
   factory Todo.fromJson(Map<String, dynamic> json) {
     try {
+      // attachments 欄位防呆，保證 List<String>? 型別，支援 JSArray
+      List<String>? attachments;
+      final rawAttachments = json['attachments'];
+      if (rawAttachments == null) {
+        attachments = null;
+      } else if (rawAttachments is String) {
+        attachments = [rawAttachments];
+      } else if (rawAttachments is Iterable || rawAttachments?.toString().contains('JSArray') == true) {
+        attachments = List<String>.from((rawAttachments as Iterable).map((e) => e.toString()));
+      } else {
+        attachments = null;
+      }
       return Todo(
         id: json['id'] as int,
         title: json['title'] as String,
@@ -36,7 +48,7 @@ class Todo {
         status: json['status'] as String,
         content: json['content'] as String?,
         location: json['location'] as String?,
-        attachments: (json['attachments'] as List<dynamic>?)?.cast<String>(),
+        attachments: attachments,
         assignee: json['assignee'] as String?,
       );
     } catch (e) {
