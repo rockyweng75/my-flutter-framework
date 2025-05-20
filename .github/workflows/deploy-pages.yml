@@ -20,8 +20,8 @@ jobs:
       - name: Create .env file
         run: |
           echo "BASE_URL=" >> .env
-          echo "AI_URL=${{ secrets.AI_URL }}" >> .env
-          echo "AI_KEY=${{ secrets.AI_KEY }}" >> .env
+          echo "AI_URL=" >> .env
+          echo "AI_KEY=" >> .env
           echo "DEBUG_MODE=${DEBUG_MODE}" >> .env
 
       - name: Install dependencies
