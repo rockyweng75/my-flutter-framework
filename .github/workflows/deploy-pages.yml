@@ -7,6 +7,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      DEBUG_MODE: ${{ vars.DEBUG_MODE }}
     steps:
       - uses: actions/checkout@v4
 
@@ -14,6 +16,13 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.29.2' 
+
+      - name: Create .env file
+        run: |
+          echo "BASE_URL=" >> .env
+          echo "AI_URL=" >> .env
+          echo "AI_KEY=" >> .env
+          echo "DEBUG_MODE=${DEBUG_MODE}" >> .env
 
       - name: Install dependencies
         run: flutter pub get
