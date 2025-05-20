@@ -59,6 +59,7 @@ dependencies:
   image: ^4.5.4
   device_info_plus: ^9.1.0
   web: ^1.1.1
+  flutter_markdown: ^0.7.7+1
 
 dev_dependencies:
   flutter_test:

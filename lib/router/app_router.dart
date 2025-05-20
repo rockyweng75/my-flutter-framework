@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 import 'package:my_flutter_framework/pages/image_upload_demo_page.dart';
 import 'package:my_flutter_framework/pages/image_compress_demo_page.dart';
 import 'package:my_flutter_framework/pages/ping/ping_devices_page.dart';
+import 'package:my_flutter_framework/pages/chat_page.dart';
 
 typedef RouteBuilder =
     Widget Function(BuildContext context, GoRouterState state);
@@ -35,6 +36,7 @@ class AppRouter {
     '/image_compress_demo': (context, state) => const ImageCompressDemoPage(),
     '/ping_tool': (context, state) => const PingTestPage(),
     '/ping_devices': (context, state) => const PingDevicesPage(),
+    '/chat': (context, state) => const ChatPage(),
     '/500':
         (context, state) => const InternalErrorPage(redirectPath: indexRoute),
   };
@@ -89,10 +91,11 @@ class AppRouter {
     '/image_compress_demo': 'Image Compress Demo',
     '/ping_tool': 'Ping Tool',
     '/ping_devices': 'Ping Devices',
+    '/chat': 'AI 聊天室',
   };
 
   static final List<String> hiddenMenus = ['/login'];
 
   /// 白名單
-  static final List<String> whiteList = ['/login', '/500'];
+  static final List<String> whiteList = ['/login', '/500', '/chat'];
 }

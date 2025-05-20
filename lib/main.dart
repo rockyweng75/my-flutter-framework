@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
+import 'package:my_flutter_framework/api/ai_client.dart';
 import 'package:my_flutter_framework/api/http_client.dart';
 import 'package:my_flutter_framework/handlers/error_handler.dart';
 import 'package:my_flutter_framework/router/app_router.dart';
@@ -47,6 +48,9 @@ void main() async {
       overrides: [
         httpClientProvider.overrideWithValue(
           HttpClient(dotenv.env['API_BASE_URL'] ?? 'http://localhost:3000'),
+        ),
+        aiClientProvider.overrideWithValue(
+          AiClient(dotenv.env['AI_URL'] ?? 'http://localhost:3000', dotenv.env['AI_KEY'] ?? 'your_api_key'),
         ),
       ],
       child: MyApp(), // 這裡用 MyApp

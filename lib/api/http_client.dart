@@ -49,6 +49,9 @@ class HttpClient {
     }
   }
 
+  String get apiKey => _defaultHeaders['Authorization']?.replaceFirst('Bearer ', '') ?? '';
+  Map<String, String> get defaultHeaders => _defaultHeaders;
+
   /// Sends a GET request to the specified [endpoint].
   ///
   /// [headers] are optional headers to include in the request.
