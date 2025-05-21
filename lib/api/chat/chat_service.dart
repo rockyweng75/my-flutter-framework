@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:my_flutter_framework/api/ai_client.dart';
 import 'package:my_flutter_framework/api/chat/i_chat_service.dart';
 import 'package:my_flutter_framework/models/chat_message.dart';
@@ -25,21 +27,30 @@ class ChatService implements IChatService {
       ),
     );
     try {
+      // TODO: 暫時使用固定的 threadId，未來可改為動態取得
+      const threadId = 'thread_9c5SVOjZtnbuCdEkUZQlD2HB';
       // Azure OpenAI 聊天 API 格式
       final data = await aiClient.post(
-        'chat/completions?api-version=2023-03-15-preview', // 或你指定的 api-version
+        '/api/askAI?threadId=$threadId', // 或你指定的 api-version
         body: {
-          'messages': [
-            {'role': 'user', 'content': message}
-          ],
-          'max_tokens': 256,
-          'temperature': 0.7,
+          'message': message,
         },
       );
       // 回傳格式為 {choices: [{message: {content: ...}}]}
-      final aiReply = (data['choices'] != null && data['choices'].isNotEmpty)
-          ? data['choices'][0]['message']['content']?.toString() ?? '無回覆'
-          : '無回覆';
+      debugPrint('AI 回覆: $data');
+      // 解析 content 欄位格式
+      // 正確格式: "choices": { content: [ { "type": "text", "text": { "value": "...", ... } } ] }
+      String aiReply = '無回覆';
+      final contentList = data['choices']?['content'];
+      if (contentList is List && contentList.isNotEmpty) {
+        final firstContent = contentList[0];
+        if (firstContent is Map &&
+            firstContent['type'] == 'text' &&
+            firstContent['text'] is Map &&
+            firstContent['text']['value'] != null) {
+          aiReply = firstContent['text']['value'].toString();
+        }
+      }
       _messages.add(
         ChatMessage(
           id: (DateTime.now().millisecondsSinceEpoch + 1).toString(),

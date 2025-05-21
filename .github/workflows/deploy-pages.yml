@@ -28,7 +28,7 @@ jobs:
         run: flutter pub get
 
       - name: Build web
-        run: flutter build web --debug --base-href="/my-flutter-framework/"
+        run: flutter build web --debug --base-href="/my-flutter-framework/" --dart-define=AI_KEY=${{ secrets.AI_KEY }} --dart-define=AI_URL=${{ secrets.AI_URL }} --dart-define=BASE_URL=${{ secrets.BASE_URL }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

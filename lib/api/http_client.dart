@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -108,7 +109,7 @@ class HttpClient {
   T _processResponse<T>(http.Response response, T Function(dynamic)? fromJson) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       try {
-        final decodedBody = jsonDecode(response.body);
+        final decodedBody = jsonDecode(utf8.decode(response.bodyBytes));
         if (fromJson != null) {
           return fromJson(decodedBody);
         } else {

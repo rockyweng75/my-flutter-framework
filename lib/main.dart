@@ -33,6 +33,7 @@ class CustomScrollBehavior extends ScrollBehavior {
   };
 }
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final Logger logger = Logger();
@@ -42,18 +43,33 @@ void main() async {
 
   ErrorHandler();
 
+  // 優先使用 dart-define，否則 fallback 到 dotenv
+  final aiUrl = const String.fromEnvironment('AI_URL', defaultValue: '')
+      .isNotEmpty
+      ? const String.fromEnvironment('AI_URL')
+      : dotenv.env['AI_URL'] ?? 'http://localhost:3000';
+
+  final aiKey = const String.fromEnvironment('AI_KEY', defaultValue: '')
+      .isNotEmpty
+      ? const String.fromEnvironment('AI_KEY')
+      : dotenv.env['AI_KEY'] ?? 'your_api_key';
+
+  final apiBaseUrl = const String.fromEnvironment('API_BASE_URL', defaultValue: '')
+      .isNotEmpty
+      ? const String.fromEnvironment('API_BASE_URL')
+      : dotenv.env['API_BASE_URL'] ?? 'http://localhost:3000';
+
   runApp(
     ProviderScope(
-      // 全局註冊 Riverpod
       overrides: [
         httpClientProvider.overrideWithValue(
-          HttpClient(dotenv.env['API_BASE_URL'] ?? 'http://localhost:3000'),
+          HttpClient(apiBaseUrl),
         ),
         aiClientProvider.overrideWithValue(
-          AiClient(dotenv.env['AI_URL'] ?? 'http://localhost:3000', dotenv.env['AI_KEY'] ?? 'your_api_key'),
+          AiClient(aiUrl, aiKey),
         ),
       ],
-      child: MyApp(), // 這裡用 MyApp
+      child: MyApp(),
     ),
   );
 }
