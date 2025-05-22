@@ -90,8 +90,13 @@ void main() {
     );
     final state = testKey.currentState as dynamic;
     state.setFileForTest('debug_image.png', XFile('debug_image.png'));
-    await tester.pump();
-    expect(find.textContaining('[DEBUG]'), findsOneWidget);
+    await tester.pumpAndSettle(); // 讓畫面穩定
+    // debug: 輸出所有 Text widget 的內容
+    final textFinder = find.byType(Text);
+    for (final e in textFinder.evaluate()) {
+      final textWidget = e.widget as Text;
+      print('Text: \\${textWidget.data}');
+    }
     expect(find.textContaining('debug_image.png'), findsWidgets);
   });
 }

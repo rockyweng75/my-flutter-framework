@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter_framework/shared/components/full_loading.dart';
+import 'package:my_flutter_framework/shared/components/loading/full_loading.dart';
 class TransactionManager {
   final BuildContext context;
 
