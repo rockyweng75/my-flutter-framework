@@ -2,6 +2,9 @@
 
 `My_Flutter_Framework` 是一個基於 Flutter 的框架，旨在快速構建高效、可擴展的應用程式。此框架包含多種常用的功能模組，並提供了靈活的擴展能力。
 
+## Demo
+[Demo 線上預覽](https://rockyweng75.github.io/my-flutter-framework/)
+
 ---
 
 ## 功能模組
@@ -51,6 +54,11 @@
 
 ![404頁面](docs/404.png)
 ![500頁面](docs/500.png)
+
+### 8. 手勢按鈕
+- 使用 `DraggableMenuButton` 提供手勢觸發的按鈕。
+- 適用於防止誤觸的場景。
+![手勢按鈕](docs/gesture_menu_select_item.png)
 
 ---
 
