@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_flutter_framework/database/user_repository.dart';
 import 'package:my_flutter_framework/pages/buttons/drag_confirm_button_demo_page.dart';
+import 'package:my_flutter_framework/pages/gesture_menu_demo_page.dart';
 import 'package:my_flutter_framework/pages/home/dashboard_page.dart';
 import 'package:my_flutter_framework/pages/progress/_page.dart';
 import 'package:my_flutter_framework/pages/login/login_page.dart';
@@ -39,6 +40,7 @@ class AppRouter {
     '/ping_devices': (context, state) => const PingDevicesPage(),
     '/chat': (context, state) => const ChatPage(),
     '/progress_page': (context, state) => const ProgressPage(),
+    '/gesture_menu_demo': (context, state) => const GestureMenuDemoPage(),
     '/500':
         (context, state) => const InternalErrorPage(redirectPath: indexRoute),
   };
@@ -94,11 +96,17 @@ class AppRouter {
     '/ping_tool': 'Ping Tool',
     '/ping_devices': 'Ping Devices',
     '/progress_page': 'Progress Page',
+    '/gesture_menu_demo': 'Gesture Menu Demo',
     '/chat': 'AI Chat',
   };
 
   static final List<String> hiddenMenus = ['/login'];
 
   /// 白名單
-  static final List<String> whiteList = ['/login', '/500', '/chat', '/progress_page'];
+  static final List<String> whiteList = [
+    '/login',
+    '/500',
+    '/chat',
+    '/gesture_menu_demo',
+  ];
 }

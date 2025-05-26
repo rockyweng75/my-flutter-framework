@@ -1,0 +1,6 @@
+{
+  // 忽略 integration_test 目錄下所有測試檔案
+  "testing.ignoredTestDirectories": [
+    "integration_test"
+  ]
+}

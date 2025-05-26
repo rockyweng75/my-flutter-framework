@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:my_flutter_framework/adapters/ping/ping_adapter.dart';
-import 'package:my_flutter_framework/models/device_ping_result.dart';
 import 'package:my_flutter_framework/models/ping_result.dart';
 
 class TestPingAdapter extends PingAdapter {

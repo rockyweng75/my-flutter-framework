@@ -96,6 +96,7 @@ flutter:
     - assets/404.png
     - assets/500.png
     - assets/images/
+    - assets/tutorials/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
